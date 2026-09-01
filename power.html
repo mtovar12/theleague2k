@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The League 2K — the live home, permanent record, and complete owner history for a two-conference fantasy football institution.">
+  <meta name="theme-color" content="#080b10" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f2f0ea" media="(prefers-color-scheme: light)">
+  <title>Power Rankings | The League 2K</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="power">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="conference-rail" aria-hidden="true"><span></span><span></span></div>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html" aria-label="The League 2K home">
+        <span class="brand-mark" aria-hidden="true">2K</span>
+        <span class="brand-copy"><strong>The League 2K</strong><small>Est. 2014 · AFC / NFC</small></span>
+      </a>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="power.html" aria-current="page">Power</a>
+        <a href="owners.html">Owners</a>
+        <a href="champions.html">Champions</a>
+        <a href="records.html">Records</a>
+        <a href="rivalries.html">Rivalries</a>
+        <a href="season.html">Seasons</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+
+    <section class="section page-top" aria-labelledby="power-title">
+      <div class="shell">
+        <div class="page-heading product-heading">
+          <div><p class="section-kicker">Power rankings</p><h1 id="power-title">The full board</h1><p id="pr-note" class="section-intro"></p></div>
+          <div class="segmented" id="power-filter" role="group" aria-label="Filter power rankings">
+            <button type="button" class="is-active" data-power-filter="ALL" aria-pressed="true">Combined</button>
+            <button type="button" data-power-filter="AFC" aria-pressed="false">AFC</button>
+            <button type="button" data-power-filter="NFC" aria-pressed="false">NFC</button>
+          </div>
+        </div>
+        <div class="power-board standalone-power" id="pr-table" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <div><span class="footer-mark">2K</span><p class="footer-title">The League 2K</p></div>
+      <div><p>Live season data from Sleeper. History from MyFantasyLeague and league records dating to 2014.</p></div>
+      <div><p class="footer-label">Permanent record</p><p>Two conferences. Every season. One place built for Sunday.</p></div>
+    </div>
+    <div class="shell footer-bottom"><span>Est. 2014</span><span>AFC red · NFC blue</span><span>Built for the group chat</span></div>
+  </footer>
+  <script src="players.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

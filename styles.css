@@ -3847,3 +3847,34 @@ td a {
 .season-card.season-card-founding > summary { background: linear-gradient(90deg, rgba(215, 173, 74, 0.10), transparent 60%); }
 .season-card.season-card-founding > summary strong { color: var(--gold-bright, var(--gold)); }
 @media (max-width: 640px) { .founding-identity { align-items: flex-start; } .founding-identity .podium-logo { width: 56px; height: 56px; } }
+
+/* ---- Owners: ranked list view ---- */
+.owner-tools { display: grid; gap: 14px; margin-bottom: 18px; }
+.owner-tool-group { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.toggle-chip { border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: var(--ink-2); padding: 9px 16px; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: background 160ms ease, color 160ms ease, border-color 160ms ease; }
+.toggle-chip:hover { border-color: var(--gold); color: var(--ink); }
+.toggle-chip.is-active { background: var(--gold); border-color: var(--gold); color: #111; }
+.owner-list { display: grid; gap: 6px; }
+.owner-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) 76px 70px 84px 74px 80px 84px; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); text-decoration: none; font-variant-numeric: tabular-nums; transition: transform 160ms ease, border-color 160ms ease, background 160ms ease; }
+.owner-row:hover { transform: translateY(-1px); border-color: var(--line-strong); background: var(--surface-2, var(--surface)); }
+.owner-row-head { padding: 4px 14px; border: 0; background: transparent; color: var(--ink-3); font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.owner-row-head:hover { transform: none; }
+.owner-row.is-alumni { opacity: 0.72; }
+.owner-rank { color: var(--ink-3); font-family: var(--display); font-size: 20px; }
+.owner-row:nth-child(2) .owner-rank { color: var(--gold); }
+.owner-identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.owner-identity .owner-avatar { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 9px; object-fit: cover; }
+.owner-identity > span { min-width: 0; }
+.owner-identity strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 800; }
+.owner-identity small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-3); font-size: 11.5px; }
+.owner-record, .owner-pct { font-family: var(--display); font-size: 20px; letter-spacing: 0.02em; }
+.owner-pct { color: var(--gold-bright, var(--gold)); }
+.owner-titles strong { font-family: var(--display); font-size: 20px; color: var(--gold); }
+.owner-titles small { display: block; color: var(--ink-3); font-size: 10.5px; }
+.owner-titles .muted { color: var(--ink-3); font-family: var(--display); font-size: 20px; }
+.confchip.alumni { background: var(--surface-3, #2a2f38); color: var(--ink-2); }
+@media (max-width: 900px) { .owner-row { grid-template-columns: 28px minmax(0, 1fr) 76px 84px 70px 60px; } .col-seasons, .col-pf { display: none; } }
+@media (max-width: 560px) { .owner-row { grid-template-columns: 24px minmax(0, 1fr) 78px 62px 48px; gap: 8px; padding: 10px; } .col-conf { display: none; } .owner-record, .owner-pct, .owner-titles strong, .owner-titles .muted { font-size: 17px; } }
+.owner-pct small.unranked { display: block; color: var(--ink-3); font-family: var(--body); font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+@media (max-width: 900px) { .owner-row { grid-template-columns: 26px minmax(0, 1fr) 84px 76px 56px; gap: 10px; } .col-conf, .col-seasons, .col-pf { display: none; } .owner-identity .owner-avatar { width: 34px; height: 34px; } }
+@media (max-width: 560px) { .owner-row { grid-template-columns: 22px minmax(0, 1fr) 72px 66px 40px; gap: 8px; padding: 10px; } .owner-titles small { display: none; } }

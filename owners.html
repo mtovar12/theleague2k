@@ -38,10 +38,16 @@
       <div class="shell">
         <div class="page-heading split-heading">
           <div><p class="section-kicker">League people</p><h1 id="owners-title">Owners</h1></div>
-          <p class="section-intro">Every owner, every era, and every career record in The League 2K.</p>
+          <p class="section-intro">Every owner since 2014, ranked by career win percentage (two full seasons to qualify). Careers combine every era — ESPN, RT Sports, MyFantasyLeague, and Sleeper.</p>
         </div>
-        <div class="owner-tools"><label class="search-field"><span>Find an owner</span><input id="owner-search" type="search" placeholder="Name, handle, or team" autocomplete="off"></label><div class="segmented" id="owner-filter" role="group" aria-label="Filter owners"><button class="is-active" type="button" data-owner-filter="ALL" aria-pressed="true">All</button><button type="button" data-owner-filter="AFC" aria-pressed="false">AFC</button><button type="button" data-owner-filter="NFC" aria-pressed="false">NFC</button><button type="button" data-owner-filter="ALUMNI" aria-pressed="false">Alumni</button></div></div>
-        <div class="owner-grid" id="owner-grid"></div>
+        <div class="owner-tools">
+          <label class="search-field"><span>Find an owner</span><input id="owner-search" type="search" placeholder="Name, handle, or team" autocomplete="off"></label>
+          <div class="owner-tool-group">
+            <div class="segmented" id="owner-sort" role="group" aria-label="Sort owners"><button class="is-active" type="button" data-owner-sort="winpct" aria-pressed="true">Win %</button><button type="button" data-owner-sort="az" aria-pressed="false">A–Z</button><button type="button" data-owner-sort="titles" aria-pressed="false">Titles</button><button type="button" data-owner-sort="wins" aria-pressed="false">Wins</button></div>
+            <button class="toggle-chip" type="button" id="owner-active-only" aria-pressed="false">Active owners only</button>
+          </div>
+        </div>
+        <div class="owner-list" id="owner-grid" role="table" aria-label="Owner career records"></div>
       </div>
     </section>
   </main>

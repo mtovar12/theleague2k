@@ -564,43 +564,64 @@
   }
 
   function renderOwnerGrid() {
-    const grid = $("owner-grid");
-    if (!grid) return;
+    const list = $("owner-grid");
+    if (!list) return;
     const search = $("owner-search");
-    const buttons = Array.from(document.querySelectorAll("[data-owner-filter]"));
-    let filter = "ALL";
+    const sortButtons = Array.from(document.querySelectorAll("[data-owner-sort]"));
+    const activeToggle = $("owner-active-only");
+    let sortMode = "winpct";
+    let activeOnly = false;
+    const isActive = (owner) => owner.current?.year === String(D.currentSeason);
+    const played = (owner) => owner.seasons.filter((season) => season.wins != null && (season.wins + season.losses) > 0).length;
 
     function draw() {
       const query = search.value.trim().toLowerCase();
       const owners = Object.values(people).filter((owner) => {
-        const conference = owner.current?.year === String(D.currentSeason) ? owner.current.conference : "ALUMNI";
-        const filterMatch = filter === "ALL" || filter === conference || (filter === "ALUMNI" && conference === "ALUMNI");
+        if (activeOnly && !isActive(owner)) return false;
         const haystack = [owner.name, owner.handle, ...owner.seasons.map((season) => season.team)].join(" ").toLowerCase();
-        return filterMatch && (!query || haystack.includes(query));
-      }).sort((a, b) => {
-        const aCurrent = a.current?.year === String(D.currentSeason) ? 0 : 1;
-        const bCurrent = b.current?.year === String(D.currentSeason) ? 0 : 1;
-        return aCurrent - bCurrent || String(a.current?.conference).localeCompare(String(b.current?.conference)) || a.name.localeCompare(b.name);
+        return !query || haystack.includes(query);
       });
-      grid.innerHTML = owners.length ? owners.map((owner) => {
+      const games = (owner) => owner.summary.wins + owner.summary.losses + (owner.summary.ties || 0);
+      const qualified = (owner) => games(owner) >= 26; // roughly two full seasons
+      const byWinPct = (a, b) => (Number(qualified(b)) - Number(qualified(a))) || (b.summary.winPct - a.summary.winPct) || (b.summary.wins - a.summary.wins) || a.name.localeCompare(b.name);
+      owners.sort((a, b) => {
+        if (sortMode === "az") return a.name.localeCompare(b.name);
+        if (sortMode === "titles") return (b.summary.titles - a.summary.titles) || (b.summary.conferenceTitles - a.summary.conferenceTitles) || byWinPct(a, b);
+        if (sortMode === "wins") return (b.summary.wins - a.summary.wins) || byWinPct(a, b);
+        return byWinPct(a, b);
+      });
+      const header = `<div class="owner-row owner-row-head" role="row"><span>#</span><span>Owner</span><span class="col-conf">Conf.</span><span class="col-seasons">Seasons</span><span>Record</span><span>Win %</span><span class="col-pf">PF</span><span>Titles</span></div>`;
+      list.innerHTML = owners.length ? header + owners.map((owner, index) => {
         const current = owner.current || {};
-        const active = current.year === String(D.currentSeason);
-        const titles = owner.summary.titles;
-        const crowns = owner.summary.conferenceTitles;
-        return `<a class="owner-card" href="owner.html?id=${encodeURIComponent(owner.id)}"><div class="owner-card-top">${avatarMarkup(owner.name, current.avatar, "owner-avatar")}<span class="confchip ${active && current.conference ? current.conference.toLowerCase() : "alumni"}">${active ? esc(current.conference) : "Alumni"}</span></div><h2>${esc(owner.name)}</h2><p>${esc(current.team || owner.handle || "—")}</p><div class="owner-card-stats"><span><small>Career</small><strong>${owner.summary.wins}–${owner.summary.losses}</strong></span><span><small>Titles</small><strong>${titles}</strong></span><span><small>Conf.</small><strong>${crowns}</strong></span></div></a>`;
+        const active = isActive(owner);
+        const s = owner.summary;
+        const pct = (s.wins + s.losses) ? `${(s.winPct * 100).toFixed(1)}%` : "—";
+        const titleMark = s.titles ? `<strong>${s.titles}</strong>` : `<span class="muted">0</span>`;
+        return `<a class="owner-row ${active ? "" : "is-alumni"}" role="row" href="owner.html?id=${encodeURIComponent(owner.id)}">
+          <span class="owner-rank">${index + 1}</span>
+          <span class="owner-identity">${avatarMarkup(owner.name, current.avatar, "owner-avatar")}<span><strong>${esc(owner.name)}${trophyMarkup(owner.id)}</strong><small>${esc(active ? (current.team || owner.handle || "") : (owner.handle || "Alumni"))}</small></span></span>
+          <span class="col-conf">${active && current.conference ? `<span class="confchip ${current.conference.toLowerCase()}">${esc(current.conference)}</span>` : `<span class="confchip alumni">Alumni</span>`}</span>
+          <span class="col-seasons">${played(owner)}</span>
+          <span class="owner-record">${s.wins}–${s.losses}${s.ties ? `–${s.ties}` : ""}</span>
+          <span class="owner-pct">${pct}${qualified(owner) ? "" : '<small class="unranked">under 2 seasons</small>'}</span>
+          <span class="col-pf">${s.pf ? formatNumber(s.pf, 0) : "—"}</span>
+          <span class="owner-titles">${titleMark}${s.conferenceTitles ? `<small>${s.conferenceTitles} conf.</small>` : ""}</span>
+        </a>`;
       }).join("") : '<p class="empty-state owner-empty">No owners match this view.</p>';
-      repairImages(grid);
+      repairImages(list);
     }
     search.addEventListener("input", draw);
-    buttons.forEach((button) => button.addEventListener("click", () => {
-      filter = button.dataset.ownerFilter;
-      buttons.forEach((item) => {
-        const active = item === button;
-        item.classList.toggle("is-active", active);
-        item.setAttribute("aria-pressed", String(active));
-      });
+    sortButtons.forEach((button) => button.addEventListener("click", () => {
+      sortMode = button.dataset.ownerSort;
+      sortButtons.forEach((item) => { const on = item === button; item.classList.toggle("is-active", on); item.setAttribute("aria-pressed", String(on)); });
       draw();
     }));
+    if (activeToggle) activeToggle.addEventListener("click", () => {
+      activeOnly = !activeOnly;
+      activeToggle.classList.toggle("is-active", activeOnly);
+      activeToggle.setAttribute("aria-pressed", String(activeOnly));
+      draw();
+    });
     draw();
   }
 
@@ -677,10 +698,11 @@
       const previousLeft = left.value;
       const previousRight = right.value;
       const options = owners.map((owner) => `<option value="${esc(owner.id)}">${esc(owner.name)}${owner.current?.team && owner.current.team !== owner.name ? ` — ${esc(owner.current.team)}` : ""}</option>`).join("");
-      left.innerHTML = options;
-      right.innerHTML = options;
-      left.value = owners.some((owner) => owner.id === previousLeft) ? previousLeft : owners[0]?.id || "";
-      right.value = owners.some((owner) => owner.id === previousRight && owner.id !== left.value) ? previousRight : owners[1]?.id || "";
+      const placeholder = '<option value="">Choose an owner…</option>';
+      left.innerHTML = placeholder + options;
+      right.innerHTML = placeholder + options;
+      left.value = owners.some((owner) => owner.id === previousLeft) ? previousLeft : "";
+      right.value = owners.some((owner) => owner.id === previousRight && owner.id !== left.value) ? previousRight : "";
       draw();
     }
 
@@ -688,7 +710,7 @@
       const leftId = left.value;
       const rightId = right.value;
       if (!leftId || !rightId || leftId === rightId) {
-        output.innerHTML = '<p class="empty-state">Choose two different owners.</p>';
+        output.innerHTML = '<p class="empty-state">Pick two owners to open the tale of the tape.</p>';
         return;
       }
       const leftOwner = person(leftId);

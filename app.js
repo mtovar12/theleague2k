@@ -39,9 +39,24 @@
     return '<span class="trophy" role="img" aria-label="Current champion" tabindex="0" data-tip="Current champion"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path fill="currentColor" d="M7 2h10v2h3v3a5 5 0 0 1-4.6 4.98A6 6 0 0 1 13 15.9V18h3v2H8v-2h3v-2.1a6 6 0 0 1-2.4-3.92A5 5 0 0 1 4 7V4h3V2zm-1 4v1a3 3 0 0 0 2 2.83V6H6zm12 0h-2v3.83A3 3 0 0 0 18 7V6z"/></svg></span>';
   }
 
+  function ownerMention(personId, label, options = {}) {
+    const owner = person(personId);
+    const primary = label || owner?.name || "—";
+    const secondary = options.secondary || "";
+    const className = ["owner-mention", options.className || ""].filter(Boolean).join(" ");
+    const imageName = owner?.current?.team || owner?.name || primary;
+    const image = owner?.current?.avatar || "";
+    const primaryTag = options.primaryTag === "h1" ? "h1" : "span";
+    const content = `${avatarMarkup(imageName, image, options.avatarClass || "owner-mention-avatar")}<span class="owner-mention-copy"><${primaryTag} class="owner-mention-primary">${options.withTrophy === false ? "" : trophyMarkup(personId)}${esc(primary)}</${primaryTag}>${secondary ? `<span class="owner-mention-secondary">${esc(secondary)}</span>` : ""}</span>`;
+    if (!personId || options.link === false) {
+      const wrapperTag = primaryTag === "h1" ? "div" : "span";
+      return `<${wrapperTag} class="${esc(className)}">${content}</${wrapperTag}>`;
+    }
+    return `<a class="${esc(className)}" href="owner.html?id=${encodeURIComponent(personId)}">${content}</a>`;
+  }
+
   function ownerLink(personId, label, className = "", withTrophy = true) {
-    if (!personId) return `<span${className ? ` class="${esc(className)}"` : ""}>${esc(label || "—")}</span>`;
-    return `<a${className ? ` class="${esc(className)}"` : ""} href="owner.html?id=${encodeURIComponent(personId)}">${withTrophy ? trophyMarkup(personId) : ""}${esc(label || displayName(personId))}</a>`;
+    return ownerMention(personId, label, { className, withTrophy });
   }
 
   function seasonLogo(year, personId) {
@@ -119,14 +134,19 @@
   }
 
   function repairImages(container = document) {
-    container.querySelectorAll("img.team-avatar, img.owner-avatar, img.season-logo, img.season-game-logo, img.podium-logo").forEach((image) => {
-      image.addEventListener("error", () => {
+    container.querySelectorAll("img.team-avatar, img.owner-avatar, img.owner-mention-avatar, img.season-logo, img.season-game-logo, img.podium-logo, img.player-photo").forEach((image) => {
+      const repair = () => {
         const fallback = document.createElement("span");
         fallback.className = `${image.className} avatar-placeholder`;
         fallback.setAttribute("aria-hidden", "true");
         fallback.textContent = initials(image.dataset.name || image.alt || "?");
         image.replaceWith(fallback);
-      }, { once: true });
+      };
+      if (image.complete && image.naturalWidth === 0) repair();
+      else if (!image.dataset.repairBound) {
+        image.dataset.repairBound = "true";
+        image.addEventListener("error", repair, { once: true });
+      }
     });
   }
 
@@ -135,7 +155,7 @@
     const same = !owner || String(team).trim().toLowerCase() === owner.trim().toLowerCase();
     return `<span class="identity ${esc(size)}">
       ${avatarMarkup(team || owner, image, "team-avatar")}
-      <span><strong>${ownerLink(personId, team || owner || "—")}</strong>${same ? "" : `<small>${ownerLink(personId, owner, "", false)}</small>`}</span>
+      ${ownerMention(personId, team || owner || "—", { secondary: same ? "" : owner, className: "identity-owner" })}
     </span>`;
   }
 
@@ -196,13 +216,38 @@
 
   function playerInfo(playerId) {
     const info = PLAYERS[String(playerId)] || [String(playerId), "", ""];
-    return { id: String(playerId), name: info[0], position: info[1] || "—", team: info[2] || "FA" };
+    const id = String(playerId);
+    const position = info[1] || (/^[A-Z]{2,4}$/.test(id) ? "DEF" : "—");
+    return { id, sid: id, name: info[0], position, pos: position, team: info[2] || (position === "DEF" ? id : "FA") };
+  }
+
+  function normalizedPosition(value) {
+    const raw = String(value || "—").toUpperCase();
+    return raw === "DEFENSE" || raw === "D/ST" ? "DEF" : raw === "PK" ? "K" : raw;
+  }
+
+  function playerPhotoUrl(player) {
+    const sid = String(player?.sid || player?.id || "").trim();
+    if (!sid) return "";
+    const position = normalizedPosition(player?.pos || player?.position);
+    if (position === "DEF") return `https://sleepercdn.com/images/team_logos/nfl/${encodeURIComponent(sid.toLowerCase())}.png`;
+    return safeImage(player?.photo) || `https://sleepercdn.com/content/nfl/players/thumb/${encodeURIComponent(sid)}.jpg`;
+  }
+
+  function playerPhotoMarkup(player, className = "player-photo") {
+    const name = player?.name || player?.player || player?.sid || "Player";
+    const position = normalizedPosition(player?.pos || player?.position);
+    const source = playerPhotoUrl(player);
+    const classes = [className, position === "DEF" ? "defense-photo" : ""].filter(Boolean).join(" ");
+    return source
+      ? `<img class="${esc(classes)}" src="${esc(source)}" alt="" data-name="${esc(name)}" loading="lazy">`
+      : `<span class="${esc(classes)} avatar-placeholder" aria-hidden="true">${esc(initials(name))}</span>`;
   }
 
   function renderPlayerList(ids, title) {
     return `<div class="roster-group"><h4>${esc(title)}</h4><div>${ids.length ? ids.map((id) => {
       const player = playerInfo(id);
-      return `<span class="player-line"><i>${esc(player.position)}</i><strong>${esc(player.name)}</strong><small>${esc(player.team)}</small></span>`;
+      return `<span class="player-line">${playerPhotoMarkup(player)}<i>${esc(normalizedPosition(player.position))}</i><strong>${esc(player.name)}</strong><small>${esc(player.team)}</small></span>`;
     }).join("") : '<p class="empty-state">—</p>'}</div></div>`;
   }
 
@@ -220,6 +265,7 @@
       const starters = (roster.starters || []).filter(Boolean);
       const bench = allPlayers.filter((id) => !starterSet.has(id));
       detail.innerHTML = `<div class="roster-grid">${renderPlayerList(starters, "Starters")}${renderPlayerList(bench, "Bench")}</div>`;
+      repairImages(detail);
     } catch (error) {
       detail.innerHTML = '<p class="error-state">Roster data is unavailable right now.</p>';
     }
@@ -323,7 +369,6 @@
       }).sort((a, b) => b.wins - a.wins || a.losses - b.losses || b.points - a.points);
       element.innerHTML = rows.map((row, index) => `<div class="standing-row" style="--delay:${Math.min(index * 30, 300)}ms">
         <span class="standing-rank">${index + 1}</span>
-        ${avatarMarkup(row.owner.team, row.owner.avatar)}
         ${ownerLink(row.owner.personId, `${row.owner.team}${row.owner.personId ? ` · ${displayName(row.owner.personId, row.owner.handle)}` : row.owner.handle ? ` · ${row.owner.handle}` : ""}`, "standing-owner")}
         <strong>${row.wins}–${row.losses}</strong><span>${formatNumber(row.points, 1)}</span>
       </div>`).join("");
@@ -361,9 +406,9 @@
         const rightPoints = Number(right.points || 0);
         const started = leftPoints > 0 || rightPoints > 0;
         return `<article class="matchup-game" style="--delay:${index * 40}ms">
-          <div class="matchup-team ${started && leftPoints > rightPoints ? "winner" : ""}">${avatarMarkup(leftRoster.team, leftRoster.avatar)}<span>${ownerLink(leftRoster.personId, `${leftRoster.team || "—"}${leftRoster.personId ? ` · ${displayName(leftRoster.personId, leftRoster.handle)}` : ""}`)}</span><strong>${started ? leftPoints.toFixed(1) : "—"}</strong></div>
+          <div class="matchup-team ${started && leftPoints > rightPoints ? "winner" : ""}"><span>${ownerLink(leftRoster.personId, `${leftRoster.team || "—"}${leftRoster.personId ? ` · ${displayName(leftRoster.personId, leftRoster.handle)}` : ""}`)}</span><strong>${started ? leftPoints.toFixed(1) : "—"}</strong></div>
           <span class="matchup-vs">VS</span>
-          <div class="matchup-team right ${started && rightPoints > leftPoints ? "winner" : ""}">${avatarMarkup(rightRoster.team, rightRoster.avatar)}<span>${ownerLink(rightRoster.personId, `${rightRoster.team || "—"}${rightRoster.personId ? ` · ${displayName(rightRoster.personId, rightRoster.handle)}` : ""}`)}</span><strong>${started ? rightPoints.toFixed(1) : "—"}</strong></div>
+          <div class="matchup-team right ${started && rightPoints > leftPoints ? "winner" : ""}"><span>${ownerLink(rightRoster.personId, `${rightRoster.team || "—"}${rightRoster.personId ? ` · ${displayName(rightRoster.personId, rightRoster.handle)}` : ""}`)}</span><strong>${started ? rightPoints.toFixed(1) : "—"}</strong></div>
         </article>`;
       }).join("");
       repairImages(element);
@@ -375,7 +420,10 @@
   }
 
   function transactionPlayers(players) {
-    return players.map((playerId) => `<span>${esc(playerInfo(playerId).name)}</span>`).join("");
+    return players.map((playerId) => {
+      const player = playerInfo(playerId);
+      return `<span class="transaction-player">${playerPhotoMarkup(player, "player-photo player-photo-compact")}<b>${esc(player.name)}</b></span>`;
+    }).join("");
   }
 
   async function renderTransactions() {
@@ -599,7 +647,7 @@
         const titleMark = s.titles ? `<strong>${s.titles}</strong>` : `<span class="muted">0</span>`;
         return `<a class="owner-row ${active ? "" : "is-alumni"}" role="row" href="owner.html?id=${encodeURIComponent(owner.id)}">
           <span class="owner-rank">${index + 1}</span>
-          <span class="owner-identity">${avatarMarkup(owner.name, current.avatar, "owner-avatar")}<span><strong>${esc(owner.name)}${trophyMarkup(owner.id)}</strong><small>${esc(active ? (current.team || owner.handle || "") : (owner.handle || "Alumni"))}</small></span></span>
+          ${ownerMention(owner.id, owner.name, { link: false, secondary: active ? (current.team || owner.handle || "") : (owner.handle || "Alumni"), className: "owner-identity", avatarClass: "owner-avatar" })}
           <span class="col-conf">${active && current.conference ? `<span class="confchip ${current.conference.toLowerCase()}">${esc(current.conference)}</span>` : `<span class="confchip alumni">Alumni</span>`}</span>
           <span class="col-seasons">${played(owner)}</span>
           <span class="owner-record">${s.wins}–${s.losses}${s.ties ? `–${s.ties}` : ""}</span>
@@ -625,6 +673,278 @@
     draw();
   }
 
+  const ownerBestWeekCache = new Map();
+
+  function ownerPlayerKey(player) {
+    return player?.key || `${String(player?.name || player?.player || "").trim().toLowerCase()}|${normalizedPosition(player?.pos)}`;
+  }
+
+  function loadOwnerSeasonBest(personId, year) {
+    const cacheKey = `${personId}:${year}`;
+    if (ownerBestWeekCache.has(cacheKey)) return ownerBestWeekCache.get(cacheKey);
+    const request = getJSON(`seasons/${encodeURIComponent(year)}.json`).then((season) => {
+      const best = new Map();
+      const inspectTeam = (team, week) => {
+        if (team?.personId !== personId) return;
+        (team.lineup || []).filter((player) => player.starter).forEach((player) => {
+          const key = ownerPlayerKey(player);
+          const points = Number(player.pts || 0);
+          if (!best.has(key) || points > best.get(key).pts) best.set(key, { pts: points, year: String(year), week: Number(week) });
+        });
+      };
+      (season.weeks || []).forEach((week) => {
+        (week.matchups || []).forEach((matchup) => {
+          inspectTeam(matchup.home, week.week);
+          inspectTeam(matchup.away, week.week);
+        });
+        (week.scores || []).forEach((team) => inspectTeam(team, week.week));
+      });
+      return best;
+    }).catch(() => new Map());
+    ownerBestWeekCache.set(cacheKey, request);
+    return request;
+  }
+
+  function setupOwnerHistory(history, owner) {
+    const root = $("owner-history-content");
+    if (!root || history.personId !== owner.id) return;
+    const years = (history.seasons || []).map(String);
+    const draftYears = Object.keys(history.drafts || {}).sort((a, b) => Number(b) - Number(a));
+    const positions = ["QB", "RB", "WR", "TE", "K", "DEF"];
+    let year = "ALL";
+    let playerSearch = "";
+    let playerPosition = "ALL";
+    let sortKey = "pts";
+    let sortDirection = "desc";
+    let draftYear = draftYears[0] || "";
+    let selectedBest = null;
+
+    root.innerHTML = `<div class="history-controls">
+      <label class="history-season-picker" for="history-season"><span>History season</span><select id="history-season"><option value="ALL">All-time</option>${years.map((item) => `<option value="${esc(item)}">${esc(item)}</option>`).join("")}</select></label>
+      <nav class="history-anchor-nav" aria-label="Team history sections"><a href="#hall-of-fame">Hall of Fame</a><a href="#most-rostered">Most Rostered</a><a href="#top-scorers">Top Scorers</a><a href="#draft-history">Draft History</a></nav>
+    </div>
+    <div class="owner-signature" id="owner-signature" aria-live="polite"></div>
+    <section class="history-section" id="hall-of-fame" aria-labelledby="hall-of-fame-title"><header><div><p class="section-kicker">The inner circle</p><h3 id="hall-of-fame-title">Hall of Fame</h3></div><span class="panel-status" id="hof-context">All-time</span></header><div class="hall-grid" id="owner-hof"></div></section>
+    <section class="history-section" id="most-rostered" aria-labelledby="most-rostered-title"><header><div><p class="section-kicker">Loyalty ledger</p><h3 id="most-rostered-title">Most Rostered</h3></div><span class="panel-status" id="rostered-context">All-time</span></header><div class="loyalty-list" id="owner-loyalty"></div></section>
+    <section class="history-section" id="top-scorers" aria-labelledby="top-scorers-title"><header><div><p class="section-kicker">Every contributor</p><h3 id="top-scorers-title">Top Scorers</h3></div><span class="panel-status" id="scorers-count"></span></header>
+      <div class="scorer-tools"><label class="search-field"><span>Search players</span><input id="player-history-search" type="search" placeholder="Player name" autocomplete="off"></label><div class="position-filters" id="player-position-filter" role="group" aria-label="Filter players by position"><button class="is-active" type="button" data-player-position="ALL" aria-pressed="true">All</button>${positions.map((position) => `<button type="button" data-player-position="${position}" aria-pressed="false">${position}</button>`).join("")}</div></div>
+      <div class="history-table" id="owner-scorers"></div>
+    </section>
+    <section class="history-section" id="draft-history" aria-labelledby="draft-history-title"><header><div><p class="section-kicker">Draft room</p><h3 id="draft-history-title">Draft History</h3></div><span class="panel-status">Pick by pick</span></header><div class="draft-year-tabs" id="owner-draft-tabs" role="tablist" aria-label="Draft year"></div><div id="owner-drafts"></div></section>`;
+
+    const historySeason = $("history-season");
+    const hofRoot = $("owner-hof");
+    const loyaltyRoot = $("owner-loyalty");
+    const scorersRoot = $("owner-scorers");
+    const draftTabs = $("owner-draft-tabs");
+    const draftsRoot = $("owner-drafts");
+
+    function viewPlayers() {
+      return (history.players || []).map((player) => {
+        if (year === "ALL") return { ...player, pos: normalizedPosition(player.pos), best: player.best || null };
+        const stats = player.seasons?.[year];
+        if (!stats) return null;
+        return {
+          ...player,
+          pos: normalizedPosition(player.pos),
+          pts: Number(stats.pts || 0),
+          starts: Number(stats.starts || 0),
+          weeks: Number(stats.weeks || 0),
+          best: selectedBest?.get(ownerPlayerKey(player)) || (String(player.best?.year) === year ? player.best : null)
+        };
+      }).filter(Boolean);
+    }
+
+    function seasonsSpan(player) {
+      const playerYears = Object.keys(player.seasons || {}).filter((item) => year === "ALL" || item === year).sort();
+      if (!playerYears.length) return "—";
+      return playerYears.length === 1 ? playerYears[0] : `${playerYears[0]}–${playerYears[playerYears.length - 1]}`;
+    }
+
+    function drawSignature(players) {
+      const drafts = Object.entries(history.drafts || {}).filter(([draftSeason]) => year === "ALL" || draftSeason === year);
+      const draftCounts = new Map();
+      drafts.forEach(([, draft]) => {
+        const seen = new Set();
+        (draft.picks || []).forEach((pick) => {
+          const key = String(pick.player || "").trim().toLowerCase();
+          if (!key || seen.has(key)) return;
+          seen.add(key);
+          const current = draftCounts.get(key) || { name: pick.player, pos: pick.pos, sid: pick.sid, photo: pick.photo, count: 0 };
+          current.count += 1;
+          draftCounts.set(key, current);
+        });
+      });
+      const drafted = [...draftCounts.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))[0];
+      const byPosition = new Map();
+      players.forEach((player) => byPosition.set(player.pos, (byPosition.get(player.pos) || 0) + Number(player.pts || 0)));
+      const totalPoints = [...byPosition.values()].reduce((sum, value) => sum + value, 0);
+      const favorite = [...byPosition.entries()].sort((a, b) => b[1] - a[1])[0];
+      const loyal = players.slice().sort((a, b) => Number(b.weeks || 0) - Number(a.weeks || 0) || a.name.localeCompare(b.name))[0];
+      $("owner-signature").innerHTML = `<article>${drafted ? playerPhotoMarkup(drafted, "player-photo signature-photo") : '<span class="signature-photo avatar-placeholder" aria-hidden="true">—</span>'}<div><small>${year === "ALL" ? "Most drafted" : "Draft name"}</small><strong>${esc(drafted?.name || "—")}</strong><span>${drafted ? `${drafted.count} draft${drafted.count === 1 ? "" : "s"}` : "No picks"}</span></div></article>
+        <article><span class="signature-position">${esc(favorite?.[0] || "—")}</span><div><small>Scoring DNA</small><strong>${esc(favorite?.[0] || "—")}</strong><span>${favorite && totalPoints ? `${Math.round(favorite[1] / totalPoints * 100)}% of starter points` : "No starter points"}</span></div></article>
+        <article>${loyal ? playerPhotoMarkup(loyal, "player-photo signature-photo") : '<span class="signature-photo avatar-placeholder" aria-hidden="true">—</span>'}<div><small>Longest tenure</small><strong>${esc(loyal?.name || "—")}</strong><span>${loyal ? `${loyal.weeks} weeks · ${seasonsSpan(loyal)}` : "No roster weeks"}</span></div></article>`;
+      repairImages($("owner-signature"));
+    }
+
+    function drawHall(players) {
+      const rows = players.filter((player) => Number(player.pts || 0) > 0).sort((a, b) => Number(b.pts || 0) - Number(a.pts || 0) || Number(b.starts || 0) - Number(a.starts || 0)).slice(0, 12);
+      $("hof-context").textContent = year === "ALL" ? "All-time" : year;
+      hofRoot.innerHTML = rows.length ? rows.map((player, index) => `<article class="hall-card${index < 3 ? " is-featured" : ""}"><span class="hall-rank">${index + 1}</span>${playerPhotoMarkup(player, "player-photo hall-photo")}<div><span class="position-badge pos-${esc(player.pos.toLowerCase())}">${esc(player.pos)}</span><h4>${esc(player.name)}</h4><p><strong>${formatNumber(player.pts, 1)}</strong> pts · ${player.starts} starts</p><small>${player.best ? `Best ${seasonScore(player.best.pts)} · ${esc(player.best.year)} W${esc(player.best.week)}` : "Season high —"}</small></div></article>`).join("") : '<p class="history-empty">No starter points in this season.</p>';
+      repairImages(hofRoot);
+    }
+
+    function drawLoyalty(players) {
+      const rows = players.filter((player) => Number(player.weeks || 0) > 0).sort((a, b) => Number(b.weeks || 0) - Number(a.weeks || 0) || Number(b.starts || 0) - Number(a.starts || 0)).slice(0, 12);
+      $("rostered-context").textContent = year === "ALL" ? "All-time" : year;
+      loyaltyRoot.innerHTML = rows.length ? rows.map((player, index) => `<article><span class="loyalty-rank">${index + 1}</span>${playerPhotoMarkup(player, "player-photo loyalty-photo")}<div><span>${esc(player.pos)}</span><strong>${esc(player.name)}</strong><small>${player.weeks} weeks · ${esc(seasonsSpan(player))}</small></div></article>`).join("") : '<p class="history-empty">No roster weeks in this season.</p>';
+      repairImages(loyaltyRoot);
+    }
+
+    function drawScorers(players) {
+      const query = playerSearch.trim().toLowerCase();
+      const rows = players.filter((player) => (playerPosition === "ALL" || player.pos === playerPosition) && (!query || player.name.toLowerCase().includes(query)));
+      const valueFor = (player, key) => key === "pps" ? (player.starts ? Number(player.pts || 0) / player.starts : 0) : Number(player[key] || 0);
+      rows.sort((a, b) => {
+        const direction = sortDirection === "asc" ? 1 : -1;
+        return (valueFor(a, sortKey) - valueFor(b, sortKey)) * direction || a.name.localeCompare(b.name);
+      });
+      $("scorers-count").textContent = `${rows.length} player${rows.length === 1 ? "" : "s"}`;
+      const heading = (label, key) => `<th aria-sort="${sortKey === key ? (sortDirection === "asc" ? "ascending" : "descending") : "none"}"><button type="button" data-history-sort="${key}">${label}<span aria-hidden="true">${sortKey === key ? (sortDirection === "asc" ? "↑" : "↓") : "↕"}</span></button></th>`;
+      scorersRoot.innerHTML = rows.length ? `<div class="table-wrap"><table><thead><tr><th>Player</th>${heading("Points", "pts")}${heading("Starts", "starts")}${heading("Pts / start", "pps")}${heading("Weeks", "weeks")}</tr></thead><tbody>${rows.map((player) => `<tr><td><span class="scorer-player">${playerPhotoMarkup(player)}<span><strong>${esc(player.name)}</strong><small>${esc(player.pos)}</small></span></span></td><td><strong>${formatNumber(player.pts, 1)}</strong></td><td>${player.starts}</td><td>${player.starts ? formatNumber(player.pts / player.starts, 1) : "—"}</td><td>${player.weeks}</td></tr>`).join("")}</tbody></table></div>` : '<p class="history-empty">No players match this view.</p>';
+      repairImages(scorersRoot);
+    }
+
+    function drawDraftTabs() {
+      draftTabs.innerHTML = draftYears.map((item) => `<button type="button" role="tab" data-draft-year="${esc(item)}" aria-selected="${String(item === draftYear)}" tabindex="${item === draftYear ? "0" : "-1"}" class="${item === draftYear ? "is-active" : ""}">${esc(item)}</button>`).join("");
+    }
+
+    function draftPickMarkup(pick, format) {
+      const price = format === "auction" && pick.price != null ? `<b class="price-badge">$${esc(pick.price)}</b>` : "";
+      return `<article class="owner-draft-pick">${playerPhotoMarkup({ name: pick.player, pos: pick.pos, sid: pick.sid, photo: pick.photo }, "player-photo draft-history-photo")}<div><span>${format === "auction" ? `Pick ${esc(pick.pick || "—")}` : `Round ${esc(pick.round || "—")}${pick.pick ? ` · Pick ${esc(pick.pick)}` : ""}`}</span><strong>${esc(pick.player || "—")}</strong><small>${esc(normalizedPosition(pick.pos))}</small></div>${price}</article>`;
+    }
+
+    function drawDraft() {
+      drawDraftTabs();
+      const draft = history.drafts?.[draftYear];
+      if (!draft) {
+        draftsRoot.innerHTML = '<p class="history-empty">No draft picks for this season.</p>';
+        return;
+      }
+      const auction = draft.format === "auction";
+      const picks = (draft.picks || []).slice().sort((a, b) => auction ? Number(b.price || 0) - Number(a.price || 0) || Number(a.pick || 0) - Number(b.pick || 0) : Number(a.round || 0) - Number(b.round || 0) || Number(a.pick || 0) - Number(b.pick || 0));
+      const biggest = auction ? picks[0] : null;
+      draftsRoot.innerHTML = `<div class="owner-draft-heading"><div><span class="platform-chip">${esc(draft.platform)}</span>${draft.conference ? `<span class="confchip ${String(draft.conference).toLowerCase()}">${esc(draft.conference)}</span>` : ""}</div><strong>${auction ? "Auction board" : "Snake draft"}</strong></div>
+        ${biggest ? `<aside class="biggest-buy"><div><span>Biggest buy · ${esc(draftYear)}</span><strong>$${esc(biggest.price)}</strong></div>${playerPhotoMarkup({ name: biggest.player, pos: biggest.pos, sid: biggest.sid, photo: biggest.photo }, "player-photo biggest-buy-photo")}<p><b>${esc(biggest.player)}</b><small>${esc(normalizedPosition(biggest.pos))}</small></p></aside>` : ""}
+        <div class="owner-draft-list ${auction ? "is-auction" : "is-snake"}">${picks.length ? picks.map((pick) => draftPickMarkup(pick, draft.format)).join("") : '<p class="history-empty">No draft picks for this season.</p>'}</div>`;
+      repairImages(draftsRoot);
+    }
+
+    function drawPlayers() {
+      const players = viewPlayers();
+      drawSignature(players);
+      drawHall(players);
+      drawLoyalty(players);
+      drawScorers(players);
+    }
+
+    async function selectYear(nextYear) {
+      year = nextYear;
+      selectedBest = null;
+      if (year !== "ALL" && history.drafts?.[year]) draftYear = year;
+      drawPlayers();
+      drawDraft();
+      if (year !== "ALL") {
+        const targetYear = year;
+        const best = await loadOwnerSeasonBest(owner.id, targetYear);
+        if (year !== targetYear) return;
+        selectedBest = best;
+        drawHall(viewPlayers());
+      }
+    }
+
+    historySeason.addEventListener("change", () => selectYear(historySeason.value));
+    $("player-history-search").addEventListener("input", (event) => {
+      playerSearch = event.target.value;
+      drawScorers(viewPlayers());
+    });
+    $("player-position-filter").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-player-position]");
+      if (!button) return;
+      playerPosition = button.dataset.playerPosition;
+      $("player-position-filter").querySelectorAll("[data-player-position]").forEach((item) => {
+        const active = item === button;
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
+      drawScorers(viewPlayers());
+    });
+    scorersRoot.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-history-sort]");
+      if (!button) return;
+      const nextKey = button.dataset.historySort;
+      if (sortKey === nextKey) sortDirection = sortDirection === "desc" ? "asc" : "desc";
+      else {
+        sortKey = nextKey;
+        sortDirection = "desc";
+      }
+      drawScorers(viewPlayers());
+    });
+    draftTabs.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-draft-year]");
+      if (!button) return;
+      draftYear = button.dataset.draftYear;
+      drawDraft();
+    });
+    draftTabs.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      const buttons = Array.from(draftTabs.querySelectorAll("[data-draft-year]"));
+      const current = buttons.indexOf(event.target.closest("[data-draft-year]"));
+      if (current < 0) return;
+      event.preventDefault();
+      const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (current + (event.key === "ArrowRight" ? 1 : -1) + buttons.length) % buttons.length;
+      buttons[next].click();
+      draftTabs.querySelector(`[data-draft-year="${draftYear}"]`)?.focus();
+    });
+
+    drawPlayers();
+    drawDraft();
+    root.dataset.loaded = "true";
+    const anchor = (location.hash || "").slice(1);
+    if (["team-history", "hall-of-fame", "most-rostered", "top-scorers", "draft-history"].includes(anchor)) requestAnimationFrame(() => document.getElementById(anchor)?.scrollIntoView({ block: "start" }));
+  }
+
+  function queueOwnerHistory(personId, owner) {
+    const shell = $("team-history");
+    const root = $("owner-history-content");
+    if (!shell || !root) return;
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      root.setAttribute("aria-busy", "true");
+      getJSON(`owners/${encodeURIComponent(personId)}.json`).then((history) => setupOwnerHistory(history, owner)).catch(() => {
+        root.innerHTML = '<div class="history-load-error"><strong>Team history is unavailable right now.</strong><button type="button" data-history-retry>Try again</button></div>';
+        root.querySelector("[data-history-retry]")?.addEventListener("click", () => {
+          started = false;
+          root.innerHTML = '<div class="skeleton history-skeleton"><span></span><span></span><span></span></div>';
+          start();
+        });
+      }).finally(() => root.setAttribute("aria-busy", "false"));
+    };
+    const requested = ["#team-history", "#hall-of-fame", "#most-rostered", "#top-scorers", "#draft-history"].includes(location.hash);
+    if (requested) start();
+    else if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        start();
+      }, { rootMargin: "900px 0px" });
+      observer.observe(shell);
+    } else if ("requestIdleCallback" in window) window.requestIdleCallback(start, { timeout: 1600 });
+    else window.setTimeout(start, 250);
+  }
+
   function renderOwnerProfile() {
     const root = $("owner-profile");
     if (!root) return;
@@ -639,7 +959,7 @@
     const summary = owner.summary;
     const years = [...new Set(owner.seasons.map((season) => season.year))];
     root.innerHTML = `<header class="profile-header">
-      <div class="profile-identity">${avatarMarkup(owner.name, current.avatar, "owner-avatar profile-avatar")}<div><p class="section-kicker">Owner career</p><h1>${esc(owner.name)}</h1><p>${esc(current.team || owner.handle || "—")}</p><div class="profile-chips">${current.conference ? `<span class="confchip ${current.conference.toLowerCase()}">${esc(current.conference)}</span>` : ""}${owner.handle && owner.handle !== owner.name ? `<span class="handle-chip">@${esc(owner.handle)}</span>` : ""}</div></div></div>
+      <div><p class="section-kicker profile-kicker">Owner career</p><div class="profile-identity">${ownerMention(owner.id, owner.name, { link: false, secondary: current.team || owner.handle || "—", className: "profile-owner-mention", avatarClass: "owner-avatar profile-avatar", primaryTag: "h1" })}<div class="profile-chips">${current.conference ? `<span class="confchip ${current.conference.toLowerCase()}">${esc(current.conference)}</span>` : ""}${owner.handle && owner.handle !== owner.name ? `<span class="handle-chip">@${esc(owner.handle)}</span>` : ""}</div></div></div>
       <a class="back-link" href="owners.html">All owners →</a>
     </header>
     <div class="summary-grid">
@@ -652,6 +972,7 @@
       <article><small>Best season</small><strong>${summary.bestSeason ? `${esc(summary.bestSeason.year)} · ${esc(summary.bestSeason.record)}` : "—"}</strong></article>
     </div>
     <section class="profile-section" aria-labelledby="career-seasons"><div class="profile-section-heading"><div><p class="section-kicker">Career log</p><h2 id="career-seasons">Season by season</h2></div><div class="season-filters"><label>Year<select id="owner-year"><option value="ALL">All years</option>${years.map((year) => `<option value="${esc(year)}">${esc(year)}</option>`).join("")}</select></label><div class="segmented" id="era-filter" role="group" aria-label="Filter career seasons"><button class="is-active" type="button" data-era-filter="ALL" aria-pressed="true">All eras</button><button type="button" data-era-filter="Sleeper" aria-pressed="false">Sleeper</button><button type="button" data-era-filter="MFL" aria-pressed="false">MFL</button><button type="button" data-era-filter="Early" aria-pressed="false">Early</button></div></div></div><div class="career-table" id="career-table"></div></section>
+    <section class="profile-section team-history-shell" id="team-history" aria-labelledby="team-history-title"><div class="profile-section-heading"><div><p class="section-kicker">Lineup era · 2017 onward</p><h2 id="team-history-title">Team History</h2><p class="section-intro">The players, draft choices, scoring fingerprints, and long-term favorites that define this roster.</p></div><span class="panel-status">Starter points · roster weeks</span></div><div id="owner-history-content" aria-busy="true"><div class="skeleton history-skeleton"><span></span><span></span><span></span></div></div></section>
     <section class="profile-section" aria-labelledby="h2h-title"><div class="profile-section-heading"><div><p class="section-kicker">Head to head</p><h2 id="h2h-title">Every opponent</h2></div><span class="panel-status">Regular season · playoffs</span></div><div class="h2h-list" id="owner-h2h"></div></section>`;
 
     let eraFilter = "ALL";
@@ -677,8 +998,9 @@
     drawCareer();
 
     const opponents = Object.entries(owner.h2h).map(([opponentId, stats]) => ({ owner: person(opponentId), stats })).filter((item) => item.owner).sort((a, b) => b.stats.games - a.stats.games || b.stats.playoffWins + b.stats.playoffLosses - a.stats.playoffWins - a.stats.playoffLosses || a.owner.name.localeCompare(b.owner.name));
-    $("owner-h2h").innerHTML = opponents.map(({ owner: opponent, stats }) => `<a class="h2h-row" href="owner.html?id=${encodeURIComponent(opponent.id)}">${avatarMarkup(opponent.name, opponent.current?.avatar, "team-avatar")}<span><strong>${esc(opponent.name)}</strong><small>${esc(opponent.current?.team || opponent.handle || "—")}</small></span><b>${stats.games ? `${stats.wins}–${stats.losses}${stats.ties ? `–${stats.ties}` : ""}` : "—"}</b><em>${stats.games ? `${stats.games} meeting${stats.games === 1 ? "" : "s"}` : "No meetings"}${stats.playoffWins + stats.playoffLosses ? ` · Playoffs ${stats.playoffWins}–${stats.playoffLosses}` : ""}</em></a>`).join("");
+    $("owner-h2h").innerHTML = opponents.map(({ owner: opponent, stats }) => `<div class="h2h-row">${ownerMention(opponent.id, opponent.name, { secondary: opponent.current?.team || opponent.handle || "—", className: "h2h-owner", avatarClass: "team-avatar" })}<b>${stats.games ? `${stats.wins}–${stats.losses}${stats.ties ? `–${stats.ties}` : ""}` : "—"}</b><em>${stats.games ? `${stats.games} meeting${stats.games === 1 ? "" : "s"}` : "No meetings"}${stats.playoffWins + stats.playoffLosses ? ` · Playoffs ${stats.playoffWins}–${stats.playoffLosses}` : ""}</em></div>`).join("");
     repairImages(root);
+    queueOwnerHistory(personId, owner);
   }
 
   function renderRivalries() {
@@ -687,6 +1009,14 @@
     const conference = $("riv-conf");
     const left = $("riv-a");
     const right = $("riv-b");
+
+    function drawPickerPreview(select, targetId) {
+      const target = $(targetId);
+      if (!target) return;
+      const selected = person(select.value);
+      target.innerHTML = selected ? ownerMention(selected.id, selected.name, { secondary: selected.current?.team || selected.handle || "—", link: false, className: "picker-owner-mention" }) : "";
+      repairImages(target);
+    }
 
     function candidates() {
       if (conference.value === "ALL") return Object.values(people).filter((owner) => Object.values(owner.h2h).some((stats) => stats.games || stats.playoffWins || stats.playoffLosses));
@@ -709,6 +1039,8 @@
     function draw() {
       const leftId = left.value;
       const rightId = right.value;
+      drawPickerPreview(left, "riv-a-preview");
+      drawPickerPreview(right, "riv-b-preview");
       if (!leftId || !rightId || leftId === rightId) {
         output.innerHTML = '<p class="empty-state">Pick two owners to open the tale of the tape.</p>';
         return;
@@ -720,7 +1052,7 @@
       const playoffs = D.rivalry.playoffs.filter((game) => (game.a === leftId && game.b === rightId) || (game.a === rightId && game.b === leftId));
       const averageLeft = stats.games ? (stats.pf / stats.games).toFixed(1) : "—";
       const averageRight = stats.games ? (stats.pa / stats.games).toFixed(1) : "—";
-      output.innerHTML = `<div class="tale-of-tape"><div class="fighter">${avatarMarkup(leftOwner.name, leftOwner.current?.avatar, "owner-avatar")}<div><h2>${ownerLink(leftId, teamOwnerLabel(leftOwner.current?.team, leftId))}</h2><span>${stats.wins} wins · ${averageLeft} avg</span></div></div><div class="series-score"><strong>${stats.wins}</strong><small>Series</small><strong>${stats.losses}</strong></div><div class="fighter right">${avatarMarkup(rightOwner.name, rightOwner.current?.avatar, "owner-avatar")}<div><h2>${ownerLink(rightId, teamOwnerLabel(rightOwner.current?.team, rightId))}</h2><span>${stats.losses} wins · ${averageRight} avg</span></div></div></div>
+      output.innerHTML = `<div class="tale-of-tape"><div class="fighter">${ownerMention(leftId, teamOwnerLabel(leftOwner.current?.team, leftId), { className: "fighter-owner", avatarClass: "owner-avatar" })}<span>${stats.wins} wins · ${averageLeft} avg</span></div><div class="series-score"><strong>${stats.wins}</strong><small>Series</small><strong>${stats.losses}</strong></div><div class="fighter right">${ownerMention(rightId, teamOwnerLabel(rightOwner.current?.team, rightId), { className: "fighter-owner", avatarClass: "owner-avatar" })}<span>${stats.losses} wins · ${averageRight} avg</span></div></div>
         ${playoffs.length ? `<div class="playoff-strip">${playoffs.map((game) => {
           const leftScore = game.a === leftId ? game.scoreA : game.scoreB;
           const rightScore = game.a === leftId ? game.scoreB : game.scoreA;
@@ -767,7 +1099,7 @@
     const teamName = team?.team || displayName(team?.personId, "Team");
     const ownerName = team?.personId ? displayName(team.personId, "") : "";
     const same = ownerName && teamName.trim().toLowerCase() === ownerName.trim().toLowerCase();
-    return `<span${className ? ` class="${esc(className)}"` : ""}><strong>${ownerLink(team?.personId, teamName, "", false)}</strong>${ownerName && !same ? `<small>${ownerLink(team.personId, ownerName, "", false)}</small>` : ""}</span>`;
+    return ownerMention(team?.personId, teamName, { secondary: ownerName && !same ? ownerName : "", className, withTrophy: false });
   }
 
   function seasonSummaryMarkup(matchups) {
@@ -791,9 +1123,8 @@
   }
 
   function seasonPlayerMarkup(player) {
-    const rawPosition = String(player?.pos || "—").toUpperCase();
-    const position = rawPosition === "DEF" || rawPosition === "DEFENSE" ? "DEF" : rawPosition === "PK" ? "K" : rawPosition;
-    return `<div class="season-player"><span class="position-badge pos-${esc(position.toLowerCase())}">${esc(position)}</span><strong title="${esc(player?.name || "—")}">${esc(player?.name || "—")}</strong><small>${esc(player?.nfl || "FA")}</small><b>${seasonScore(player?.pts)}</b></div>`;
+    const position = normalizedPosition(player?.pos);
+    return `<div class="season-player">${playerPhotoMarkup(player)}<span class="position-badge pos-${esc(position.toLowerCase())}">${esc(position)}</span><strong title="${esc(player?.name || "—")}">${esc(player?.name || "—")}</strong><small>${esc(player?.nfl || "FA")}</small><b>${seasonScore(player?.pts)}</b></div>`;
   }
 
   function seasonLineupMarkup(team, side) {
@@ -834,27 +1165,33 @@
     </article>`;
   }
 
-  function draftPositionMap(data) {
-    const positions = new Map();
-    const add = (name, position) => {
+  function draftPlayerMap(data) {
+    const playersByName = new Map();
+    const add = (name, position, sid = "", photo = "") => {
       const key = String(name || "").trim().toLowerCase();
-      if (key && position && !positions.has(key)) positions.set(key, String(position).toUpperCase().replace("PK", "K").replace("DEFENSE", "DEF"));
+      if (!key) return;
+      const current = playersByName.get(key) || {};
+      playersByName.set(key, {
+        name,
+        pos: normalizedPosition(position || current.pos || ""),
+        sid: String(sid || current.sid || ""),
+        photo: photo || current.photo || ""
+      });
     };
-    Object.values(PLAYERS).forEach((row) => add(row?.[0], row?.[1]));
-    (data.weeks || []).forEach((week) => (week.matchups || []).forEach((matchup) => [matchup.home, matchup.away].forEach((team) => (team?.lineup || []).forEach((player) => add(player.name, player.pos)))));
-    return positions;
+    Object.entries(PLAYERS).forEach(([sid, row]) => add(row?.[0], row?.[1], sid));
+    (data.weeks || []).forEach((week) => (week.matchups || []).forEach((matchup) => [matchup.home, matchup.away].forEach((team) => (team?.lineup || []).forEach((player) => add(player.name, player.pos, player.sid, player.photo)))));
+    return playersByName;
   }
 
-  function draftPosition(name, positions) {
+  function draftPlayer(name, playersByName) {
     const key = String(name || "").trim().toLowerCase();
-    const found = positions.get(key);
+    const found = playersByName.get(key);
     if (found) return found;
-    if (/d\/st|defense/i.test(name)) return "DEF";
-    if (/kicker/i.test(name)) return "K";
-    return "";
+    const pos = /d\/st|defense/i.test(name) ? "DEF" : /kicker/i.test(name) ? "K" : "";
+    return { name, pos, sid: pos === "DEF" ? String(name).split(/\s/)[0] : "", photo: "" };
   }
 
-  function draftBoardMarkup(board, data, boardIndex, positions) {
+  function draftBoardMarkup(board, data, boardIndex, playersByName) {
     const columns = board.columns || [];
     const rounds = Math.max(0, ...columns.map((column) => column.picks?.length || 0));
     const boardName = String(board.name || `Board ${boardIndex + 1}`).replace(/^board\s*/i, "Board ");
@@ -865,11 +1202,12 @@
     const rows = Array.from({ length: rounds }, (_, roundIndex) => {
       const round = roundIndex + 1;
       const picks = columns.map((column, columnIndex) => {
-        const player = column.picks?.[roundIndex] || "—";
-        const position = draftPosition(player, positions);
+        const playerName = column.picks?.[roundIndex] || "—";
+        const player = draftPlayer(playerName, playersByName);
+        const position = normalizedPosition(player.pos);
         const group = ["QB", "RB", "WR", "TE", "K", "DEF"].includes(position) ? position.toLowerCase() : "other";
         const overall = round % 2 ? roundIndex * columns.length + columnIndex + 1 : roundIndex * columns.length + (columns.length - columnIndex);
-        return `<td><div class="draft-pick pos-${esc(group)}"><small>${overall}</small><strong title="${esc(player)}">${esc(player)}</strong>${position ? `<span>${esc(position)}</span>` : ""}</div></td>`;
+        return `<td><div class="draft-pick pos-${esc(group)}"><small>${overall}</small>${playerPhotoMarkup(player, "player-photo draft-player-photo")}<strong title="${esc(playerName)}">${esc(playerName)}</strong>${position && position !== "—" ? `<span>${esc(position)}</span>` : ""}</div></td>`;
       }).join("");
       return `<tr><th class="draft-round" scope="row"><span>Round</span><strong>${round}</strong></th>${picks}</tr>`;
     }).join("");
@@ -983,7 +1321,7 @@
             <span class="confchip ${esc((team.conference || "").toLowerCase())}">${esc(team.conference || "")}</span>
             <strong class="season-score-points">${seasonScore(team.score)}</strong>
           </summary>
-          <div class="season-score-lineup">${starters.map((player) => `<span class="player-line"><i>${esc(player.pos)}</i><strong>${esc(player.name)}</strong><small>${esc(player.nfl)}</small><b>${seasonScore(player.pts)}</b></span>`).join("")}</div>
+          <div class="season-score-lineup">${starters.map((player) => `<span class="player-line">${playerPhotoMarkup(player)}<i>${esc(normalizedPosition(player.pos))}</i><strong>${esc(player.name)}</strong><small>${esc(player.nfl)}</small><b>${seasonScore(player.pts)}</b></span>`).join("")}</div>
         </details>`;
       }).join("");
       return { summary, list: `<div class="season-scoreboard"><p class="season-scoreboard-note">Scores only — matchups weren't recorded for this week.</p>${list}</div>` };
@@ -1016,8 +1354,8 @@
         draftPanel.innerHTML = '<p class="draft-unavailable">Draft board not yet loaded</p>';
         return;
       }
-      const positions = draftPositionMap(data);
-      draftPanel.innerHTML = `<div class="draft-intro"><p class="section-kicker">Draft night</p><h2>Built pick by pick</h2><p>${esc(data.drafts.format)}</p></div>${data.drafts.boards.map((board, index) => draftBoardMarkup(board, data, index, positions)).join("")}`;
+      const playersByName = draftPlayerMap(data);
+      draftPanel.innerHTML = `<div class="draft-intro"><p class="section-kicker">Draft night</p><h2>Built pick by pick</h2><p>${esc(data.drafts.format)}</p></div>${data.drafts.boards.map((board, index) => draftBoardMarkup(board, data, index, playersByName)).join("")}`;
       repairImages(draftPanel);
     }
 

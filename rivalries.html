@@ -9,6 +9,7 @@
   <title>Rivalries | The League 2K</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://sleepercdn.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -36,7 +37,7 @@
 
     <section class="section rivalry-section page-top" aria-labelledby="rivalries-title">
       <div class="shell"><div class="page-heading centered-heading"><p class="section-kicker">Head to head</p><h1 id="rivalries-title">Settle the score</h1><p class="section-intro">Choose two owners for the complete cross-era series.</p></div>
-        <div class="fight-picker"><label><span>Conference</span><select id="riv-conf"><option value="ALL">All</option><option value="AFC">AFC</option><option value="NFC">NFC</option></select></label><label><span>Red corner</span><select id="riv-a"></select></label><span class="versus" aria-hidden="true">VS</span><label><span>Blue corner</span><select id="riv-b"></select></label></div>
+        <div class="fight-picker"><label><span>Conference</span><select id="riv-conf"><option value="ALL">All</option><option value="AFC">AFC</option><option value="NFC">NFC</option></select></label><label><span>Red corner</span><span class="picker-owner-control"><select id="riv-a"></select><span class="picker-owner-preview" id="riv-a-preview" aria-live="polite"></span></span></label><span class="versus" aria-hidden="true">VS</span><label><span>Blue corner</span><span class="picker-owner-control"><select id="riv-b"></select><span class="picker-owner-preview" id="riv-b-preview" aria-live="polite"></span></span></label></div>
         <div id="riv-out" class="fight-card" aria-live="polite">Choose two owners.</div>
       </div>
     </section>

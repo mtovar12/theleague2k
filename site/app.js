@@ -811,7 +811,7 @@
       const keys = boardKeys();
       glossary.textContent = meta.glossary;
       const BOARD_LIMIT = 10;
-      const visibleKeys = boardExpanded ? keys : keys.slice(0, BOARD_LIMIT);
+      const visibleKeys = keys.slice(0, boardShown);
       rankingsRoot.innerHTML = visibleKeys.length ? visibleKeys.map((key, index) => {
         const player = playerData.players[key];
         const detailId = `player-detail-${index}`;
@@ -826,22 +826,27 @@
           </button>
           <div class="player-ranking-detail" id="${detailId}" hidden>${ownerTrailMarkup(player)}</div>
         </article>`;
-      }).join("") + (keys.length > BOARD_LIMIT ? `<div class="show-more-row"><button type="button" class="show-more" data-board-expand>${boardExpanded ? "Show top 10 only" : `Show all ${keys.length}`}</button></div>` : "") : '<p class="history-empty">No players match this view.</p>';
+      }).join("") + (keys.length > BOARD_LIMIT ? `<div class="show-more-row">${keys.length > boardShown ? `<button type="button" class="show-more" data-board-expand>Show ${Math.min(BOARD_LIMIT, keys.length - boardShown)} more</button>` : ""}${boardShown > BOARD_LIMIT ? `<button type="button" class="show-more show-less" data-board-collapse>Show top 10</button>` : ""}<span class="show-more-count">${Math.min(boardShown, keys.length)} of ${keys.length}</span></div>` : "") : '<p class="history-empty">No players match this view.</p>';
       rankingsRoot.setAttribute("aria-busy", "false");
       repairImages(rankingsRoot);
     }
 
-    let boardExpanded = false;
+    let boardShown = 10;
     rankingsRoot.addEventListener("click", (event) => {
-      const expand = event.target.closest("[data-board-expand]");
-      if (!expand) return;
-      boardExpanded = !boardExpanded;
-      drawBoard();
-      if (!boardExpanded) rankingsRoot.scrollIntoView({ block: "start" });
+      if (event.target.closest("[data-board-expand]")) {
+        boardShown += 10;
+        drawBoard();
+        return;
+      }
+      if (event.target.closest("[data-board-collapse]")) {
+        boardShown = 10;
+        drawBoard();
+        rankingsRoot.scrollIntoView({ block: "start" });
+      }
     });
     function selectBoard(nextBoard) {
       board = nextBoard;
-      boardExpanded = false;
+      boardShown = 10;
       boardButtons.forEach((button) => {
         const active = button.dataset.playerBoard === board;
         button.classList.toggle("is-active", active);
@@ -1041,8 +1046,8 @@
       });
       $("scorers-count").textContent = `${rows.length} player${rows.length === 1 ? "" : "s"}`;
       const SCORER_LIMIT = 10;
-      const shown = scorersExpanded ? rows : rows.slice(0, SCORER_LIMIT);
-      const moreMarkup = rows.length > SCORER_LIMIT ? `<div class="show-more-row"><button type="button" class="show-more" data-scorers-expand>${scorersExpanded ? "Show top 10 only" : `Show all ${rows.length} players`}</button></div>` : "";
+      const shown = rows.slice(0, scorersShown);
+      const moreMarkup = rows.length > SCORER_LIMIT ? `<div class="show-more-row">${rows.length > scorersShown ? `<button type="button" class="show-more" data-scorers-expand>Show ${Math.min(SCORER_LIMIT, rows.length - scorersShown)} more</button>` : ""}${scorersShown > SCORER_LIMIT ? `<button type="button" class="show-more show-less" data-scorers-collapse>Show top 10</button>` : ""}<span class="show-more-count">${Math.min(scorersShown, rows.length)} of ${rows.length} players</span></div>` : "";
       const heading = (label, key) => `<th aria-sort="${sortKey === key ? (sortDirection === "asc" ? "ascending" : "descending") : "none"}"><button type="button" data-history-sort="${key}">${label}<span aria-hidden="true">${sortKey === key ? (sortDirection === "asc" ? "↑" : "↓") : "↕"}</span></button></th>`;
       scorersRoot.innerHTML = rows.length ? `<div class="table-wrap"><table><thead><tr><th>Player</th>${heading("Points", "pts")}${heading("Starts", "starts")}${heading("Pts / start", "pps")}${heading("Weeks", "weeks")}</tr></thead><tbody>${shown.map((player) => `<tr><td><span class="scorer-player">${playerPhotoMarkup(player)}<span><strong>${esc(player.name)}</strong><small>${esc(player.pos)}</small></span></span></td><td><strong>${formatNumber(player.pts, 1)}</strong></td><td>${player.starts}</td><td>${player.starts ? formatNumber(player.pts / player.starts, 1) : "—"}</td><td>${player.weeks}</td></tr>`).join("")}</tbody></table></div>${moreMarkup}` : '<p class="history-empty">No players match this view.</p>';
       repairImages(scorersRoot);
@@ -1112,13 +1117,17 @@
       });
       drawScorers(viewPlayers());
     });
-    let scorersExpanded = false;
+    let scorersShown = 10;
     scorersRoot.addEventListener("click", (event) => {
-      const expand = event.target.closest("[data-scorers-expand]");
-      if (expand) {
-        scorersExpanded = !scorersExpanded;
+      if (event.target.closest("[data-scorers-expand]")) {
+        scorersShown += 10;
         drawScorers(viewPlayers());
-        if (!scorersExpanded) scorersRoot.scrollIntoView({ block: "start" });
+        return;
+      }
+      if (event.target.closest("[data-scorers-collapse]")) {
+        scorersShown = 10;
+        drawScorers(viewPlayers());
+        scorersRoot.scrollIntoView({ block: "start" });
         return;
       }
       const button = event.target.closest("[data-history-sort]");

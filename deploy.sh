@@ -14,4 +14,4 @@ python3 site_build.py >/dev/null
 git add -A
 git -c user.name="Mark Tovar" -c user.email="mtovar12@gmail.com" commit -q -m "${1:-Update site $(date +%Y-%m-%d)}" || echo "nothing to commit"
 git push -u origin main
-echo "Live at https://mtovar12.github.io/theleague2k/ (the Actions run redeploys Pages in ~2 minutes)"
+echo "Live at https://mtovar12.github.io/theleague2k/ (GitHub Pages rebuilds in about a minute)"

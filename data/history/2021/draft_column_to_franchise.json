@@ -1,0 +1,122 @@
+{
+ "boardA|Team Josh": {
+  "franchise": "0002",
+  "mfl_name": "Joshua Jurado",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardA|Jordan G": {
+  "franchise": "0004",
+  "mfl_name": "Jordan Grado",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardA|Andrew T": {
+  "franchise": "0009",
+  "mfl_name": "Andrew Tovar",
+  "overlap": 14,
+  "next_best": 4
+ },
+ "boardA|Danny J": {
+  "franchise": "0008",
+  "mfl_name": "Daniel Jurado",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardA|thebashfulBULGE": {
+  "franchise": "0010",
+  "mfl_name": "Pickle Ricks",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardA|Tonys Gabagool": {
+  "franchise": "0005",
+  "mfl_name": "Orlando Aragon",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardA|Biceps B": {
+  "franchise": "0012",
+  "mfl_name": "Bryan Bott",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardA|Go Diego Go": {
+  "franchise": "0011",
+  "mfl_name": "Diego Ruiz",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardA|Mark T": {
+  "franchise": "0001",
+  "mfl_name": "The Muth is Luth",
+  "overlap": 14,
+  "next_best": 4
+ },
+ "boardA|Sam H": {
+  "franchise": "0003",
+  "mfl_name": "Samuel Hardy",
+  "overlap": 13,
+  "next_best": 4
+ },
+ "boardB|Nick C": {
+  "franchise": "0006",
+  "mfl_name": "Nick Chestnut",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardB|Joey V": {
+  "franchise": "0018",
+  "mfl_name": "Joey Vogl",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardB|Daniel Q": {
+  "franchise": "0015",
+  "mfl_name": "Daniel Quintana",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardB|Robbie K": {
+  "franchise": "0013",
+  "mfl_name": "Pitts\u2019 Creek",
+  "overlap": 13,
+  "next_best": 5
+ },
+ "boardB|Gashouse Gorillas": {
+  "franchise": "0016",
+  "mfl_name": "Miraculously 7-6",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardB|Cortney M": {
+  "franchise": "0007",
+  "mfl_name": "DakBak",
+  "overlap": 11,
+  "next_best": 3
+ },
+ "boardB|Jared S": {
+  "franchise": "0014",
+  "mfl_name": "Jared Schneider",
+  "overlap": 16,
+  "next_best": 4
+ },
+ "boardB|James B": {
+  "franchise": "0017",
+  "mfl_name": "James Bullard",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardB|Kratzys Kitties": {
+  "franchise": "0020",
+  "mfl_name": "Kratzy\u2019s Kitties",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardB|Kody H": {
+  "franchise": "0019",
+  "mfl_name": "Kody Hutchins",
+  "overlap": 13,
+  "next_best": 4
+ }
+}

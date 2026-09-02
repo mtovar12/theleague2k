@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The League 2K — the live home, permanent record, and complete owner history for a two-conference fantasy football institution.">
+  <meta name="theme-color" content="#080b10" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f2f0ea" media="(prefers-color-scheme: light)">
+  <title>Record Book | The League 2K</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://sleepercdn.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="records">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="conference-rail" aria-hidden="true"><span></span><span></span></div>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html" aria-label="The League 2K home">
+        <span class="brand-mark" aria-hidden="true">2K</span>
+        <span class="brand-copy"><strong>The League 2K</strong><small>Est. 2014 · AFC / NFC</small></span>
+      </a>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="power.html">Power</a>
+        <a href="owners.html">Owners</a>
+        <a href="players.html">Players</a>
+        <a href="champions.html">Champions</a>
+        <a href="records.html" aria-current="page">Records</a>
+        <a href="rivalries.html">Rivalries</a>
+        <a href="season.html">Seasons</a>
+        <a href="archive.html">Archive</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+
+
+    <section class="section marks-section" aria-labelledby="marks-title">
+      <div class="shell"><div class="page-heading split-heading"><div><p class="section-kicker">All-time marks</p><h1 id="marks-title">The outer limits</h1></div><p class="section-intro">Every weekly score from the MFL and Sleeper eras.</p></div>
+        <blockquote class="record-pullquote"><span>Highest week</span><strong id="mark-record-score">—</strong><p id="mark-record-team">—</p><small id="mark-record-detail">—</small></blockquote>
+        <div class="marks-grid"><article class="table-panel"><header><p class="section-kicker">Scoring ceiling</p><h3>Highest single weeks</h3></header><div class="data-table" id="marks-top"></div></article><article class="table-panel"><header><p class="section-kicker">Scoring floor</p><h3>Lowest single weeks</h3></header><div class="data-table" id="marks-low"></div></article></div>
+        <article class="table-panel blowout-panel"><header><p class="section-kicker">Runaway games</p><h3>Biggest blowouts</h3></header><div class="data-table" id="marks-blow"></div></article>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <div><span class="footer-mark">2K</span><p class="footer-title">The League 2K</p></div>
+      <div><p>Live season data from Sleeper. History from MyFantasyLeague and league records dating to 2014.</p></div>
+      <div><p class="footer-label">Permanent record</p><p>Two conferences. Every season. One place built for Sunday.</p></div>
+    </div>
+    <div class="shell footer-bottom"><span>Est. 2014</span><span>AFC red · NFC blue</span><span>Built for the group chat</span></div>
+  </footer>
+  <script src="players.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

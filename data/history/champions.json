@@ -1,0 +1,44 @@
+{
+ "super_bowls": {
+  "2022": {
+   "champ": "Sam Ballard",
+   "champ_id": "sam-ballard",
+   "runner": "Rob (RobbieVT)",
+   "runner_id": "rob"
+  },
+  "2023": {
+   "champ": "Jared Schneider",
+   "champ_id": "jared-schneider",
+   "runner": "Orlando \"Orley\" Aragon",
+   "runner_id": "orlando-aragon"
+  },
+  "2024": {
+   "champ": "Bryan Bott",
+   "champ_id": "bryan-bott",
+   "runner": "Nick Chestnut",
+   "runner_id": "nick-chestnut"
+  },
+  "2025": {
+   "champ": "Orlando \"Orley\" Aragon",
+   "champ_id": "orlando-aragon",
+   "runner": "Daniel Polverari",
+   "runner_id": "daniel-polverari"
+  }
+ },
+ "champions_by_year": {
+  "2014": "mark-tovar",
+  "2015": "norm-behrens",
+  "2016": "sam-hardy",
+  "2017": "joey-vogl",
+  "2018": "jordan-grado",
+  "2019": "cortney-marks",
+  "2020": "nick-chestnut",
+  "2021": "sam-ballard",
+  "2022": "sam-ballard",
+  "2023": "jared-schneider",
+  "2024": "bryan-bott",
+  "2025": "orlando-aragon"
+ },
+ "current_champion": "orlando-aragon",
+ "source": "Mark Tovar, 2026-09-01"
+}

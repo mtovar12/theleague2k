@@ -1,1 +1,24 @@
+# Whitelist: only the public site, its build pipeline, and the league history dataset are tracked.
+/*
+!/.gitignore
+!/.github/
+!/site/
+!/data/
+/data/*
+!/data/history/
+/data/history/clickydraft/
+/data/history/2016/
+/data/history/*.md
+!/site_build.py
+!/site_data_build.py
+!/season_data_build.py
+!/owner_data_build.py
+!/players_data_build.py
+!/power_build.py
+!/sleeper_refresh.py
+!/deploy.sh
+!/README.md
 .DS_Store
+__pycache__/
+/data/history/identities_notes.json
+!/index.html

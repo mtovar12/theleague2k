@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The League 2K — the live home, permanent record, and complete owner history for a two-conference fantasy football institution.">
+  <meta name="theme-color" content="#080b10" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f2f0ea" media="(prefers-color-scheme: light)">
+  <title>Player Hall of Fame | The League 2K</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://sleepercdn.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="players">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="conference-rail" aria-hidden="true"><span></span><span></span></div>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html" aria-label="The League 2K home">
+        <span class="brand-mark" aria-hidden="true">2K</span>
+        <span class="brand-copy"><strong>The League 2K</strong><small>Est. 2014 · AFC / NFC</small></span>
+      </a>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="power.html">Power</a>
+        <a href="owners.html">Owners</a>
+        <a href="players.html" aria-current="page">Players</a>
+        <a href="champions.html">Champions</a>
+        <a href="records.html">Records</a>
+        <a href="rivalries.html">Rivalries</a>
+        <a href="season.html">Seasons</a>
+        <a href="archive.html">Archive</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+
+    <section class="players-hero page-top" aria-labelledby="players-title">
+      <div class="shell">
+        <div class="page-heading split-heading">
+          <div><p class="section-kicker gold-kicker">League player Hall of Fame</p><h1 id="players-title">The names behind the numbers.</h1></div>
+          <p class="section-intro">Every starter point, roster stop, playoff appearance, and transaction from the complete lineup era — 2017 through 2025.</p>
+        </div>
+        <div class="player-headline-grid" id="player-headlines" aria-busy="true"><div class="skeleton stack"><span></span><span></span><span></span></div></div>
+      </div>
+    </section>
+
+    <section class="section player-records" aria-labelledby="player-board-title">
+      <div class="shell">
+        <div class="page-heading player-board-heading"><div><p class="section-kicker">All-time boards</p><h2 id="player-board-title">Twenty-five deep.</h2></div><p class="section-intro">Skill positions are the default view. Include kickers and defenses to see the full churn-heavy board.</p></div>
+        <div class="player-board-tools">
+          <label class="search-field"><span>Search every player</span><input id="player-search" type="search" placeholder="Name or position" autocomplete="off"></label>
+          <div class="segmented player-scope-filter" id="player-scope-filter" role="group" aria-label="Choose player positions"><button class="is-active" type="button" data-player-scope="skill" aria-pressed="true">Skill positions</button><button type="button" data-player-scope="all" aria-pressed="false">Include K / DEF</button></div>
+        </div>
+        <div class="player-board-tabs" id="player-board-tabs" role="tablist" aria-label="Player leaderboard metric">
+          <button class="is-active" type="button" role="tab" data-player-board="points" aria-selected="true">Points</button>
+          <button type="button" role="tab" data-player-board="winShares" aria-selected="false">Win Shares</button>
+          <button type="button" role="tab" data-player-board="playoffRosters" aria-selected="false">Playoff Rosters</button>
+          <button type="button" role="tab" data-player-board="mostOwners" aria-selected="false">Most Owners</button>
+          <button type="button" role="tab" data-player-board="mostTransactions" aria-selected="false">Most Transactions</button>
+          <button type="button" role="tab" data-player-board="mostWeeks" aria-selected="false">Most Weeks</button>
+        </div>
+        <p class="player-glossary" id="player-glossary" aria-live="polite"></p>
+        <div class="player-ranking-list" id="player-rankings" aria-live="polite" aria-busy="true"><div class="skeleton rows"><span></span><span></span><span></span><span></span></div></div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <div><span class="footer-mark">2K</span><p class="footer-title">The League 2K</p></div>
+      <div><p>Live season data from Sleeper. History from MyFantasyLeague and league records dating to 2014.</p></div>
+      <div><p class="footer-label">Permanent record</p><p>Two conferences. Every season. One place built for Sunday.</p></div>
+    </div>
+    <div class="shell footer-bottom"><span>Est. 2014</span><span>AFC red · NFC blue</span><span>Built for the group chat</span></div>
+  </footer>
+  <script src="players.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

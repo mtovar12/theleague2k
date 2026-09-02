@@ -1,0 +1,122 @@
+{
+ "boardA|Ballard": {
+  "franchise": "0010",
+  "mfl_name": "Gurthey Rodds",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardA|Danny": {
+  "franchise": "0008",
+  "mfl_name": "Garoppolo's ACL",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardA|Josh": {
+  "franchise": "0002",
+  "mfl_name": "Barry Sanders & Megatron Commonality",
+  "overlap": 14,
+  "next_best": 5
+ },
+ "boardA|DC4L": {
+  "franchise": "0007",
+  "mfl_name": "Super Bowl LII Champs!",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardA|Lemmings": {
+  "franchise": "0009",
+  "mfl_name": "Jabronis",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardA|Jordan": {
+  "franchise": "0004",
+  "mfl_name": "LA Rams Fan: 2017-Present",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardA|Rob and Nick": {
+  "franchise": "0006",
+  "mfl_name": "Baltimore Rams",
+  "overlap": 15,
+  "next_best": 4
+ },
+ "boardA|Orley": {
+  "franchise": "0005",
+  "mfl_name": "HUMBLE.",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardA|Mark": {
+  "franchise": "0001",
+  "mfl_name": "Sons of Bum",
+  "overlap": 14,
+  "next_best": 4
+ },
+ "boardA|Hardy": {
+  "franchise": "0003",
+  "mfl_name": "Can't Hyde My Chubb",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardB|Bret": {
+  "franchise": "0012",
+  "mfl_name": "Treadmill Warrior",
+  "overlap": 14,
+  "next_best": 5
+ },
+ "boardB|DQ": {
+  "franchise": "0015",
+  "mfl_name": "Just Win, Baby!",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardB|Kody": {
+  "franchise": "0019",
+  "mfl_name": "Will Sony return? If not can the Ingram go again.",
+  "overlap": 12,
+  "next_best": 3
+ },
+ "boardB|James": {
+  "franchise": "0017",
+  "mfl_name": "Peachy Keenan",
+  "overlap": 15,
+  "next_best": 4
+ },
+ "boardB|Chubb Pack": {
+  "franchise": "0011",
+  "mfl_name": "2009 Tiger Woods",
+  "overlap": 16,
+  "next_best": 4
+ },
+ "boardB|RJ": {
+  "franchise": "0013",
+  "mfl_name": "RJ's Anatomy",
+  "overlap": 13,
+  "next_best": 2
+ },
+ "boardB|Tony": {
+  "franchise": "0016",
+  "mfl_name": "Bad Juju",
+  "overlap": 13,
+  "next_best": 4
+ },
+ "boardB|Kratzys Kitties": {
+  "franchise": "0020",
+  "mfl_name": "Kratzy's Kitties",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardB|Jared": {
+  "franchise": "0014",
+  "mfl_name": "Sko Buffs!",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardB|Joey": {
+  "franchise": "0018",
+  "mfl_name": "Turf Joe",
+  "overlap": 16,
+  "next_best": 5
+ }
+}

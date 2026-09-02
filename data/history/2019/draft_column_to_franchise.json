@@ -1,0 +1,122 @@
+{
+ "boardA|RobbieVT": {
+  "franchise": "0006",
+  "mfl_name": "Rob & Nick",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardA|BiBoBa": {
+  "franchise": "0010",
+  "mfl_name": "Kamara Sutra",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardA|BigO70": {
+  "franchise": "0005",
+  "mfl_name": "Orley",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardA|Andyyt42": {
+  "franchise": "0009",
+  "mfl_name": "Andrew",
+  "overlap": 16,
+  "next_best": 4
+ },
+ "boardA|dj2369": {
+  "franchise": "0008",
+  "mfl_name": "Danny J",
+  "overlap": 16,
+  "next_best": 4
+ },
+ "boardA|jayju723": {
+  "franchise": "0002",
+  "mfl_name": "Josh",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardA|cmarks214": {
+  "franchise": "0007",
+  "mfl_name": "Cortney",
+  "overlap": 15,
+  "next_best": 4
+ },
+ "boardA|jgrado21": {
+  "franchise": "0004",
+  "mfl_name": "Jordan",
+  "overlap": 16,
+  "next_best": 4
+ },
+ "boardA|hardy09": {
+  "franchise": "0003",
+  "mfl_name": "Sam H",
+  "overlap": 15,
+  "next_best": 4
+ },
+ "boardA|Krowbar1269": {
+  "franchise": "0001",
+  "mfl_name": "Phicago Eears",
+  "overlap": 16,
+  "next_best": 2
+ },
+ "boardB|rjsandoval": {
+  "franchise": "0013",
+  "mfl_name": "RJ",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardB|Beastberg": {
+  "franchise": "0012",
+  "mfl_name": "Bret",
+  "overlap": 15,
+  "next_best": 4
+ },
+ "boardB|Tanman24": {
+  "franchise": "0011",
+  "mfl_name": "Tanner",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardB|Redhairguy31": {
+  "franchise": "0017",
+  "mfl_name": "James",
+  "overlap": 14,
+  "next_best": 4
+ },
+ "boardB|ckratz28": {
+  "franchise": "0020",
+  "mfl_name": "Kratzy's Kitties",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardB|BlueSpruce": {
+  "franchise": "0018",
+  "mfl_name": "Joey",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardB|quintana7": {
+  "franchise": "0015",
+  "mfl_name": "Daniel Q",
+  "overlap": 15,
+  "next_best": 4
+ },
+ "boardB|jaredbs": {
+  "franchise": "0014",
+  "mfl_name": "Jared",
+  "overlap": 15,
+  "next_best": 4
+ },
+ "boardB|Hutchins283023": {
+  "franchise": "0019",
+  "mfl_name": "Kody",
+  "overlap": 16,
+  "next_best": 4
+ },
+ "boardB|Predmore11": {
+  "franchise": "0016",
+  "mfl_name": "Tony",
+  "overlap": 16,
+  "next_best": 4
+ }
+}

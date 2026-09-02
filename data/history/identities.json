@@ -1,0 +1,426 @@
+{
+ "people": {
+  "mark-tovar": {
+   "name": "Mark Tovar",
+   "sleeper": "Krowbar1269",
+   "mfl": {
+    "2019": "0001",
+    "2020": "0001",
+    "2021": "0001",
+    "2017": "0001",
+    "2018": "0001"
+   },
+   "pre": {
+    "2015": "Julio Gonna Call",
+    "2016": "An Ultralight Team"
+   }
+  },
+  "andrew-tovar": {
+   "name": "Andrew Tovar",
+   "sleeper": "Andyyt42",
+   "mfl": {
+    "2019": "0009",
+    "2020": "0009",
+    "2021": "0009",
+    "2018": "0009"
+   },
+   "pre": {
+    "2015": "Walking Dez",
+    "2016": "Make America Gronk Again"
+   }
+  },
+  "sam-hardy": {
+   "name": "Sam Hardy",
+   "sleeper": "hardy09",
+   "mfl": {
+    "2019": "0003",
+    "2020": "0003",
+    "2021": "0003",
+    "2017": "0003",
+    "2018": "0003"
+   },
+   "pre": {
+    "2015": "Saved by Le'Bell",
+    "2016": "Suck Brady's Bell"
+   }
+  },
+  "jordan-grado": {
+   "name": "Jordan Grado",
+   "sleeper": "jgrado21",
+   "mfl": {
+    "2019": "0004",
+    "2020": "0004",
+    "2021": "0004",
+    "2018": "0004",
+    "2017": "0004"
+   },
+   "pre": {
+    "2015": "Various",
+    "2016": "Demaryius Targaryen"
+   }
+  },
+  "daniel-quintana": {
+   "name": "Daniel Quintana",
+   "sleeper": "quintana7",
+   "mfl": {
+    "2019": "0015",
+    "2020": "0015",
+    "2021": "0015",
+    "2017": "0009",
+    "2018": "0015"
+   },
+   "pre": {
+    "2015": "Dan the MANning",
+    "2016": "Team DQ"
+   }
+  },
+  "daniel-polverari": {
+   "name": "Daniel Polverari",
+   "sleeper": "Polverari",
+   "mfl": {
+    "2017": "0002"
+   },
+   "pre": {
+    "2015": "License to Hill",
+    "2016": "The Abdullah Oblongata"
+   }
+  },
+  "josh-jurado": {
+   "name": "Josh Jurado",
+   "sleeper": "jayju723",
+   "mfl": {
+    "2019": "0002",
+    "2020": "0002",
+    "2021": "0002",
+    "2017": "0012",
+    "2018": "0002"
+   },
+   "pre": {
+    "2016": "Hello From The Other Side"
+   }
+  },
+  "danny-jurado": {
+   "name": "Danny Jurado",
+   "sleeper": "dj2369",
+   "mfl": {
+    "2019": "0008",
+    "2020": "0008",
+    "2021": "0008",
+    "2017": "0013",
+    "2018": "0008"
+   },
+   "pre": {
+    "2016": "Team Danny Jurado"
+   }
+  },
+  "orlando-aragon": {
+   "name": "Orlando \"Orley\" Aragon",
+   "sleeper": "BigO70",
+   "mfl": {
+    "2019": "0005",
+    "2020": "0005",
+    "2021": "0005",
+    "2017": "0005",
+    "2018": "0005"
+   },
+   "pre": {
+    "2016": "Delanie SkyWalker"
+   }
+  },
+  "nick-chestnut": {
+   "name": "Nick Chestnut",
+   "sleeper": "Nchestnut",
+   "mfl": {
+    "2018": "0006",
+    "2019": "0006",
+    "2020": "0006",
+    "2021": "0006"
+   },
+   "pre": {}
+  },
+  "cortney-marks": {
+   "name": "Cortney Marks",
+   "sleeper": "cmarks214",
+   "mfl": {
+    "2019": "0007",
+    "2020": "0007",
+    "2021": "0007",
+    "2017": "0011",
+    "2018": "0007"
+   },
+   "pre": {}
+  },
+  "diego-ruiz": {
+   "name": "Diego Ruiz",
+   "sleeper": "Ruiz36",
+   "mfl": {
+    "2020": "0011",
+    "2021": "0011"
+   },
+   "pre": {
+    "2016": "Ramming Ur Gurley"
+   }
+  },
+  "bryan-bott": {
+   "name": "Bryan Bott",
+   "sleeper": "bbott86",
+   "mfl": {
+    "2020": "0012",
+    "2021": "0012"
+   },
+   "pre": {}
+  },
+  "jared-schneider": {
+   "name": "Jared Schneider",
+   "sleeper": "jaredbs",
+   "mfl": {
+    "2019": "0014",
+    "2020": "0014",
+    "2021": "0014",
+    "2017": "0006",
+    "2018": "0014"
+   },
+   "pre": {
+    "2016": "Team Schneider"
+   }
+  },
+  "tony-predmore": {
+   "name": "Tony Predmore",
+   "sleeper": null,
+   "mfl": {
+    "2019": "0016",
+    "2020": "0016",
+    "2021": "0016",
+    "2017": "0016",
+    "2018": "0016"
+   },
+   "pre": {
+    "2016": "#TnT (with Trevin Stadler)"
+   }
+  },
+  "james-bullard": {
+   "name": "James Bullard",
+   "sleeper": "Redhairguy31",
+   "mfl": {
+    "2019": "0017",
+    "2020": "0017",
+    "2021": "0017",
+    "2017": "0017",
+    "2018": "0017"
+   },
+   "pre": {
+    "2015": "Gotta Catch Jamaal",
+    "2016": "Biggie Rawls"
+   }
+  },
+  "joey-vogl": {
+   "name": "Joey Vogl",
+   "sleeper": "BlueSpruce",
+   "mfl": {
+    "2019": "0018",
+    "2020": "0018",
+    "2021": "0018",
+    "2017": "0018",
+    "2018": "0018"
+   },
+   "pre": {
+    "2015": "Team Vogl"
+   }
+  },
+  "kody-hutchins": {
+   "name": "Kody Hutchins",
+   "sleeper": "Hutchins283023",
+   "mfl": {
+    "2019": "0019",
+    "2020": "0019",
+    "2021": "0019",
+    "2018": "0019"
+   },
+   "pre": {}
+  },
+  "rob": {
+   "name": "Robbie Kearns",
+   "sleeper": "RobbieVT",
+   "mfl": {
+    "2018": "0006",
+    "2019": "0006",
+    "2020": "0013",
+    "2021": "0013"
+   },
+   "pre": {}
+  },
+  "norm-behrens": {
+   "name": "Norman \"Norm\" Behrens",
+   "sleeper": null,
+   "mfl": {
+    "2017": "0008"
+   },
+   "pre": {
+    "2015": "Violating PeaCocks",
+    "2016": "Sho Nuff"
+   }
+  },
+  "ryan-walker": {
+   "name": "Ryan Walker",
+   "sleeper": null,
+   "mfl": {
+    "2017": "0019"
+   },
+   "pre": {
+    "2015": "Caitlyn Jenner",
+    "2016": "Trump Wall"
+   }
+  },
+  "chris-walker": {
+   "name": "Chris \"Critt\" Walker",
+   "sleeper": null,
+   "mfl": {
+    "2017": "0015"
+   },
+   "pre": {
+    "2015": "Gronky Kong",
+    "2016": "Mr. Anderson"
+   }
+  },
+  "brandon-walker": {
+   "name": "Brandon Walker",
+   "sleeper": null,
+   "mfl": {},
+   "pre": {
+    "2016": "Cooper Clux CLAN"
+   }
+  },
+  "sam-ballard": {
+   "name": "Sam Ballard",
+   "sleeper": "thebashfulBULGE",
+   "mfl": {
+    "2019": "0010",
+    "2020": "0010",
+    "2021": "0010",
+    "2018": "0010",
+    "2017": "0010"
+   },
+   "pre": {
+    "2016": "Team Titty Sprinkles"
+   }
+  },
+  "brett-eastberg": {
+   "name": "Brett Eastberg",
+   "sleeper": null,
+   "mfl": {
+    "2019": "0012",
+    "2018": "0012"
+   },
+   "pre": {
+    "2015": "Luck her… Percy"
+   }
+  },
+  "jessica-shoeman": {
+   "name": "Jessica Shoeman",
+   "sleeper": null,
+   "mfl": {},
+   "pre": {
+    "2016": "Team Joshua Shoeman"
+   }
+  },
+  "rj": {
+   "name": "RJ Sandoval",
+   "sleeper": null,
+   "mfl": {
+    "2018": "0013",
+    "2019": "0013"
+   },
+   "pre": {}
+  },
+  "kyle-krupansky": {
+   "name": "Kyle Krupansky",
+   "sleeper": "kkrupans",
+   "mfl": {},
+   "pre": {}
+  },
+  "greg-hassell": {
+   "name": "Greg Hassell",
+   "sleeper": "Gregh2123",
+   "mfl": {},
+   "pre": {}
+  },
+  "marcus-holguin": {
+   "name": "Marcus Holguin",
+   "sleeper": "mholguin",
+   "mfl": {},
+   "pre": {}
+  },
+  "jon-chestnut": {
+   "name": "Jon Chestnut",
+   "sleeper": "j86chestnut",
+   "mfl": {},
+   "pre": {}
+  },
+  "josh-kliesen": {
+   "name": "Josh Kliesen",
+   "sleeper": "jjkliesen",
+   "mfl": {},
+   "pre": {}
+  },
+  "ethan-freeman": {
+   "name": "Ethan Freeman",
+   "sleeper": "BakinLambs",
+   "mfl": {},
+   "pre": {}
+  },
+  "grant-kerber": {
+   "name": "Grant Kerber",
+   "sleeper": "gkerb",
+   "mfl": {},
+   "pre": {}
+  },
+  "christian-kratz": {
+   "name": "Christian Kratz",
+   "sleeper": "ckratz28",
+   "mfl": {
+    "2019": "0020",
+    "2020": "0020",
+    "2021": "0020",
+    "2017": "0020",
+    "2018": "0020"
+   },
+   "pre": {}
+  },
+  "curtis-heitz": {
+   "name": "Curtis Heitz",
+   "sleeper": null,
+   "mfl": {
+    "2017": "0007"
+   },
+   "pre": {}
+  },
+  "aaron-barnett": {
+   "name": "Aaron Barnett",
+   "sleeper": null,
+   "mfl": {
+    "2017": "0014"
+   },
+   "pre": {}
+  },
+  "tanner-hutchins": {
+   "name": "Tanner Hutchins",
+   "sleeper": null,
+   "mfl": {
+    "2018": "0011",
+    "2019": "0011"
+   },
+   "pre": {}
+  },
+  "matt-hurtssobad22": {
+   "name": "Matt Walker",
+   "sleeper": "HurtsSoBad22",
+   "mfl": {},
+   "pre": {}
+  }
+ },
+ "unknown_mfl_franchises": {
+  "0012 (2017,2018,2020)": "Josh (2017) → Treadmill Warrior (2018) → Return of the Mike (2020): separate owners, names unconfirmed",
+  "0006 (2017-18)": "Schneider → Baltimore Rams: pre-Rob&Nick owner unconfirmed",
+  "0011 (2017-19)": "Go Eagles → 2009 Tiger Woods → Tanner: pre-Diego owner(s) unconfirmed"
+ }
+}

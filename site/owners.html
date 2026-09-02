@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The League 2K — the live home, permanent record, and complete owner history for a two-conference fantasy football institution.">
+  <meta name="theme-color" content="#080b10" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f2f0ea" media="(prefers-color-scheme: light)">
+  <title>Owners | The League 2K</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://sleepercdn.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="owners">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="conference-rail" aria-hidden="true"><span></span><span></span></div>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html" aria-label="The League 2K home">
+        <span class="brand-mark" aria-hidden="true">2K</span>
+        <span class="brand-copy"><strong>The League 2K</strong><small>Est. 2014 · AFC / NFC</small></span>
+      </a>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="power.html">Power</a>
+        <a href="owners.html" aria-current="page">Owners</a>
+        <a href="players.html">Players</a>
+        <a href="champions.html">Champions</a>
+        <a href="records.html">Records</a>
+        <a href="rivalries.html">Rivalries</a>
+        <a href="season.html">Seasons</a>
+        <a href="archive.html">Archive</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+
+    <section class="section page-top" aria-labelledby="owners-title">
+      <div class="shell">
+        <div class="page-heading split-heading">
+          <div><p class="section-kicker">League people</p><h1 id="owners-title">Owners</h1></div>
+          <p class="section-intro">Every owner since 2014, ranked by career win percentage (two full seasons to qualify). Careers combine every era — ESPN, RT Sports, MyFantasyLeague, and Sleeper.</p>
+        </div>
+        <div class="owner-tools">
+          <label class="search-field"><span>Find an owner</span><input id="owner-search" type="search" placeholder="Name, handle, or team" autocomplete="off"></label>
+          <div class="owner-tool-group">
+            <div class="segmented" id="owner-sort" role="group" aria-label="Sort owners"><button class="is-active" type="button" data-owner-sort="winpct" aria-pressed="true">Win %</button><button type="button" data-owner-sort="az" aria-pressed="false">A–Z</button><button type="button" data-owner-sort="titles" aria-pressed="false">Titles</button><button type="button" data-owner-sort="wins" aria-pressed="false">Wins</button></div>
+            <button class="toggle-chip" type="button" id="owner-active-only" aria-pressed="false">Active owners only</button>
+          </div>
+        </div>
+        <div class="owner-list" id="owner-grid" role="table" aria-label="Owner career records"></div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <div><span class="footer-mark">2K</span><p class="footer-title">The League 2K</p></div>
+      <div><p>Live season data from Sleeper. History from MyFantasyLeague and league records dating to 2014.</p></div>
+      <div><p class="footer-label">Permanent record</p><p>Two conferences. Every season. One place built for Sunday.</p></div>
+    </div>
+    <div class="shell footer-bottom"><span>Est. 2014</span><span>AFC red · NFC blue</span><span>Built for the group chat</span></div>
+  </footer>
+  <script src="players.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

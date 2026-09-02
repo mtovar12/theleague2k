@@ -1,0 +1,122 @@
+{
+ "boardA|Sam H": {
+  "franchise": "0003",
+  "mfl_name": "Peaches N Kareem",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardA|BoomGiggety": {
+  "franchise": "0010",
+  "mfl_name": "Bells On Your Chin",
+  "overlap": 12,
+  "next_best": 3
+ },
+ "boardA|Jared S": {
+  "franchise": "0006",
+  "mfl_name": "Schneider",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardA|Daniel P": {
+  "franchise": "0002",
+  "mfl_name": "Daniel P",
+  "overlap": 16,
+  "next_best": 3
+ },
+ "boardA|Curt H": {
+  "franchise": "0007",
+  "mfl_name": "PARTY AT GRONKS",
+  "overlap": 14,
+  "next_best": 4
+ },
+ "boardA|Orlando A": {
+  "franchise": "0005",
+  "mfl_name": "Lights, Kamara, Action!",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardA|Norm B": {
+  "franchise": "0008",
+  "mfl_name": "Soul Crushers",
+  "overlap": 16,
+  "next_best": 4
+ },
+ "boardA|Mark T": {
+  "franchise": "0001",
+  "mfl_name": "Azor Ahai",
+  "overlap": 15,
+  "next_best": 4
+ },
+ "boardA|fuck yo couch": {
+  "franchise": "0004",
+  "mfl_name": "2 girls 1 Kupp",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardA|Josh J": {
+  "franchise": "0012",
+  "mfl_name": "Josh",
+  "overlap": 14,
+  "next_best": 5
+ },
+ "boardB|Kratzys Kitties": {
+  "franchise": "0020",
+  "mfl_name": "Kratzy's Kitties",
+  "overlap": 16,
+  "next_best": 2
+ },
+ "boardB|Critt W": {
+  "franchise": "0015",
+  "mfl_name": "THEANTEATERS",
+  "overlap": 15,
+  "next_best": 2
+ },
+ "boardB|Danny J": {
+  "franchise": "0013",
+  "mfl_name": "Grab 'em by the pudding",
+  "overlap": 15,
+  "next_best": 5
+ },
+ "boardB|Ryan W": {
+  "franchise": "0019",
+  "mfl_name": "Da Champ",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardB|Aaron B": {
+  "franchise": "0014",
+  "mfl_name": "AB",
+  "overlap": 16,
+  "next_best": 4
+ },
+ "boardB|Joey V": {
+  "franchise": "0018",
+  "mfl_name": "Joey Vogl",
+  "overlap": 16,
+  "next_best": 4
+ },
+ "boardB|TNT": {
+  "franchise": "0016",
+  "mfl_name": "Leonard Fournecators",
+  "overlap": 14,
+  "next_best": 3
+ },
+ "boardB|Cortney M": {
+  "franchise": "0011",
+  "mfl_name": "Go Eagles",
+  "overlap": 15,
+  "next_best": 3
+ },
+ "boardB|James B": {
+  "franchise": "0017",
+  "mfl_name": "Pink Hair Guy",
+  "overlap": 15,
+  "next_best": 4
+ },
+ "boardB|Daniel Q": {
+  "franchise": "0009",
+  "mfl_name": "QD",
+  "overlap": 16,
+  "next_best": 2
+ }
+}

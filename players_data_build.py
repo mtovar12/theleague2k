@@ -18,7 +18,7 @@ HIST = ROOT / "data" / "history"
 SEASONS = ROOT / "site" / "seasons"
 OUT = ROOT / "site" / "players"
 OUT.mkdir(parents=True, exist_ok=True)
-PLAYOFF_START = 14  # top 6 per conference; playoffs begin week 14 every year
+PLAYOFF_START_DEFAULT = 14  # top 6 per conference; MFL 2017-2020 began week 13, 2021+ week 14 (season files carry playoffStart)
 
 def norm(s):
     s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode().lower()
@@ -56,7 +56,7 @@ def rec_for(pl):
                           tx=dict(adds=0, drops=0, waivers=0, trades=0, total=0), stops={})
     return players[k]
 
-def ingest_team(team, year, week, won):
+def ingest_team(team, year, week, won, playoff_start=PLAYOFF_START_DEFAULT):
     lineup = team.get("lineup") or []
     total = sum(float(p.get("pts") or 0) for p in lineup if p.get("starter")) or 0.0
     for pl in lineup:
@@ -70,7 +70,7 @@ def ingest_team(team, year, week, won):
                 stop["starts"] += 1; stop["pts"] += pts
         r["weeks"] += 1
         r["seasons"].add(str(year))
-        if week >= PLAYOFF_START:
+        if week >= playoff_start:
             r["playoffWeeks"] += 1
         if pl.get("starter"):
             r["starts"] += 1
@@ -84,13 +84,14 @@ def ingest_team(team, year, week, won):
 for f in sorted(glob.glob(str(SEASONS / "*.json"))):
     s = json.load(open(f))
     year = s["year"]
+    ps = int(s.get("playoffStart") or PLAYOFF_START_DEFAULT)
     for w in s["weeks"]:
         for m in w.get("matchups", []):
             hs, as_ = float(m["home"].get("score") or 0), float(m["away"].get("score") or 0)
-            ingest_team(m["home"], year, w["week"], hs > as_)
-            ingest_team(m["away"], year, w["week"], as_ > hs)
+            ingest_team(m["home"], year, w["week"], hs > as_, ps)
+            ingest_team(m["away"], year, w["week"], as_ > hs, ps)
         for sc in w.get("scores", []):
-            ingest_team(sc, year, w["week"], False)
+            ingest_team(sc, year, w["week"], False, ps)
 
 # ---- transactions ----
 TX = HIST / "transactions"

@@ -43,6 +43,12 @@ def sleeper_id_for(name, pos):
 
 # ---------------- MFL ----------------
 M = json.load(open(HIST / "mfl_raw.json"))
+INFERRED = {}
+for _y in ["2017", "2018", "2019", "2020", "2021"]:
+    _f = HIST / _y / "schedule_inferred.json"
+    if _f.exists():
+        for _g in json.load(open(_f))["games"]:
+            INFERRED.setdefault(_y, {}).setdefault(int(_g["week"]), []).append((_g["a"], _g["b"]))
 for year in ["2017", "2018", "2019", "2020", "2021"]:
     players = json.load(open(HIST / f"mfl_players_{year}.json"))
     league = M[year]["league"]["league"]
@@ -76,7 +82,12 @@ for year in ["2017", "2018", "2019", "2020", "2021"]:
         wk = int(w["week"])
         entries = {}
         pairs = []
-        if "matchup" in w:
+        inferred = INFERRED.get(year, {}).get(wk)
+        if inferred and "franchise" in w:
+            for f in w["franchise"]:
+                entries[f["id"]] = f
+            pairs.extend(inferred)
+        elif "matchup" in w:
             ms = w["matchup"] if isinstance(w["matchup"], list) else [w["matchup"]]
             for m in ms:
                 fr = m["franchise"]
@@ -130,7 +141,10 @@ for year in ["2017", "2018", "2019", "2020", "2021"]:
                 cols.append(dict(label=col, franchise=fid, team=franchises[fid]["name"].strip() if fid else col,
                                  personId=mfl_to_person.get((year, fid)) if fid else None, picks=[html.unescape(str(x)) for x in picks]))
             drafts["boards"].append(dict(name=bk, columns=cols))
-    json.dump(dict(year=int(year), platform="MyFantasyLeague", weeks=weeks, drafts=drafts),
+    playoff_start = int(league.get("lastRegularSeasonWeek") or 13) + 1
+    if INFERRED.get(year):
+        playoff_start = max(INFERRED[year]) + 1  # 2019: MFL's setting was off by two; playoffs began week 13
+    json.dump(dict(year=int(year), platform="MyFantasyLeague", playoffStart=playoff_start, weeks=weeks, drafts=drafts),
               open(OUT / f"{year}.json", "w"), ensure_ascii=False)
     print(year, "weeks", len(weeks), "matchups", sum(len(w["matchups"]) for w in weeks), "drafts", bool(drafts))
 
@@ -215,7 +229,11 @@ for year in SLEEPER_YEARS:
         drafts = dict(format="auction, $200 budget, 15 roster spots (Sleeper)", boards=boards)
     if not weeks and not drafts:
         continue  # nothing played or drafted yet
-    json.dump(dict(year=int(year), platform="Sleeper", weeks=weeks, drafts=drafts), open(OUT / f"{year}.json", "w"), ensure_ascii=False)
+    playoff_start = 14
+    for conf in ["AFC", "NFC"]:
+        rec = H.get(f"{conf}_{year}") or {}
+        playoff_start = int(rec.get("playoff_week_start") or (rec.get("settings") or {}).get("playoff_week_start") or 14)
+    json.dump(dict(year=int(year), platform="Sleeper", playoffStart=playoff_start, weeks=weeks, drafts=drafts), open(OUT / f"{year}.json", "w"), ensure_ascii=False)
     lu = sum(1 for w in weeks for m in w["matchups"] if m["home"]["lineup"])
     print(year, "weeks", len(weeks), "matchups", sum(len(w["matchups"]) for w in weeks), "with lineups", lu)
 print("done ->", OUT)

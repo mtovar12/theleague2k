@@ -301,11 +301,20 @@ for year in sorted(mfl_raw):
     standings = source["leagueStandings"]["leagueStandings"]["franchise"]
     season_groups = {"AFC": [], "NFC": []}
 
+    # 2019: MFL's final standings leaked the week 13-14 playoff rounds (and later weeks' points) into the regular season.
+    # The standings snapshot as of week 12 is the true regular season (doubleheaders weeks 1-10, single games 11-12).
+    _fix_file = HISTORY / year / "regular_season_standings.json"
+    regular_fix = json.loads(_fix_file.read_text(encoding="utf-8"))["franchises"] if _fix_file.exists() else {}
+    _sched_file = HISTORY / year / "schedule_inferred.json"
+    inferred_games = json.loads(_sched_file.read_text(encoding="utf-8"))["games"] if _sched_file.exists() else []
     for rank, standing in enumerate(standings, 1):
         franchise_id = str(standing["id"]).zfill(4)
         franchise = franchises[franchise_id]
         conference = mfl_conference(year, franchise)
         person_id = mfl_to_person.get((year, franchise_id))
+        if franchise_id in regular_fix:
+            fix = regular_fix[franchise_id]
+            standing = {**standing, "h2hw": fix["wins"], "h2hl": fix["losses"], "h2ht": fix["ties"], "pf": fix["pf"], "pa": fix["pa"]}
         row = {
             "rank": rank,
             "franchiseId": franchise_id,
@@ -396,6 +405,28 @@ for year in sorted(mfl_raw):
 
     last_regular = integer(league.get("lastRegularSeasonWeek"), 13)
     seen_scores = set()
+    reg_points = defaultdict(lambda: {"pf": 0.0, "pa": 0.0, "games": 0})
+    def note_regular(left_id, right_id, left_score, right_score):
+        for me, opp, mine, theirs in ((left_id, right_id, left_score, right_score), (right_id, left_id, right_score, left_score)):
+            rec = reg_points[me]
+            rec["pf"] += mine; rec["pa"] += theirs; rec["games"] += 1
+    if inferred_games:
+        last_regular = max(game["week"] for game in inferred_games)
+    for game in inferred_games:
+        week = integer(game["week"])
+        left_id, right_id = game["a"], game["b"]
+        left_score, right_score = number(game["sa"]), number(game["sb"])
+        for franchise_id, score in ((left_id, left_score), (right_id, right_score)):
+            if (week, franchise_id) not in seen_scores:
+                weekly_scores.append({"score": score, "team": mfl_team(year, franchise_id, franchises.get(franchise_id, {}).get("name", "")), "personId": mfl_to_person.get((year, franchise_id)), "year": year, "week": week, "platform": "MFL"})
+            seen_scores.add((week, franchise_id))
+        conference = mfl_conference(year, franchises[left_id])
+        if conference != mfl_conference(year, franchises[right_id]):
+            conference = "Interconference"
+        note_regular(left_id, right_id, left_score, right_score)
+        add_h2h(mfl_to_person.get((year, left_id)), mfl_to_person.get((year, right_id)), left_score, right_score,
+                meta={"year": year, "week": week, "platform": "MFL", "conference": conference})
+        blowouts.append({"winner": left_id if left_score >= right_score else right_id, "loser": right_id if left_score >= right_score else left_id, "winnerScore": max(left_score, right_score), "loserScore": min(left_score, right_score), "year": year, "week": week, "platform": "MFL"})
     for week_data in listify(source["schedule"]["schedule"].get("weeklySchedule")):
         week = integer(week_data.get("week"))
         if week > last_regular:
@@ -411,6 +442,7 @@ for year in sorted(mfl_raw):
                 seen_scores.add((week, franchise_id))
                 weekly_scores.append({"score": score, "team": mfl_team(year, franchise_id, franchises.get(franchise_id, {}).get("name", "")), "personId": mfl_to_person.get((year, franchise_id)), "year": year, "week": week, "platform": "MFL"})
             conference = mfl_conference(year, franchises[left_id])
+            note_regular(left_id, right_id, left_score, right_score)
             add_h2h(
                 mfl_to_person.get((year, left_id)),
                 mfl_to_person.get((year, right_id)),
@@ -436,6 +468,11 @@ for year in sorted(mfl_raw):
                 continue
             weekly_scores.append({"score": number(franchise.get("score")), "team": mfl_team(year, franchise_id, franchises.get(franchise_id, {}).get("name", "")), "personId": mfl_to_person.get((year, franchise_id)), "year": year, "week": week, "platform": "MFL"})
 
+    # MFL's standings "pf"/"pa" include every week played (playoffs and consolation): keep regular season only.
+    for franchise_id, rec in reg_points.items():
+        row = mfl_season_lookup.get((year, franchise_id))
+        if row and rec["games"] and franchise_id not in regular_fix:
+            row["pf"], row["pa"] = compact_number(rec["pf"]), compact_number(rec["pa"])
     for conference in season_groups:
         season_groups[conference].sort(key=lambda row: (-row["wins"], -row["pf"]))
         for rank, row in enumerate(season_groups[conference], 1):

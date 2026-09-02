@@ -1,0 +1,165 @@
+{
+ "source": "MFL standings as of week 12 (true regular season; weeks 13-14 were playoff rounds miscounted by MFL)",
+ "franchises": {
+  "0010": {
+   "wins": 19,
+   "losses": 3,
+   "ties": 0,
+   "pf": 1468.06,
+   "pa": 2233.36,
+   "team": "Kamara Sutra"
+  },
+  "0003": {
+   "wins": 15,
+   "losses": 7,
+   "ties": 0,
+   "pf": 1467.6,
+   "pa": 2371.1,
+   "team": "Sam H"
+  },
+  "0006": {
+   "wins": 14,
+   "losses": 8,
+   "ties": 0,
+   "pf": 1351.52,
+   "pa": 2403.88,
+   "team": "Rob & Nick"
+  },
+  "0002": {
+   "wins": 12,
+   "losses": 10,
+   "ties": 0,
+   "pf": 1382.34,
+   "pa": 2446.88,
+   "team": "Josh"
+  },
+  "0005": {
+   "wins": 9,
+   "losses": 13,
+   "ties": 0,
+   "pf": 1410.12,
+   "pa": 2443.12,
+   "team": "Orley"
+  },
+  "0007": {
+   "wins": 9,
+   "losses": 13,
+   "ties": 0,
+   "pf": 1334.54,
+   "pa": 2557.0,
+   "team": "Cortney"
+  },
+  "0004": {
+   "wins": 9,
+   "losses": 13,
+   "ties": 0,
+   "pf": 1205.98,
+   "pa": 2392.16,
+   "team": "Jordan"
+  },
+  "0008": {
+   "wins": 8,
+   "losses": 14,
+   "ties": 0,
+   "pf": 1230.24,
+   "pa": 2454.28,
+   "team": "Danny J"
+  },
+  "0009": {
+   "wins": 7,
+   "losses": 15,
+   "ties": 0,
+   "pf": 1212.26,
+   "pa": 2587.52,
+   "team": "Andrew"
+  },
+  "0001": {
+   "wins": 6,
+   "losses": 16,
+   "ties": 0,
+   "pf": 1159.1,
+   "pa": 2439.22,
+   "team": "Phicago Eears"
+  },
+  "0017": {
+   "wins": 17,
+   "losses": 5,
+   "ties": 0,
+   "pf": 1377.74,
+   "pa": 2360.98,
+   "team": "James"
+  },
+  "0016": {
+   "wins": 15,
+   "losses": 7,
+   "ties": 0,
+   "pf": 1398.68,
+   "pa": 2304.48,
+   "team": "Tony"
+  },
+  "0020": {
+   "wins": 13,
+   "losses": 9,
+   "ties": 0,
+   "pf": 1393.84,
+   "pa": 2453.12,
+   "team": "Kratzy's Kitties"
+  },
+  "0018": {
+   "wins": 12,
+   "losses": 10,
+   "ties": 0,
+   "pf": 1311.22,
+   "pa": 2340.0,
+   "team": "Joey"
+  },
+  "0011": {
+   "wins": 12,
+   "losses": 10,
+   "ties": 0,
+   "pf": 1282.62,
+   "pa": 2283.72,
+   "team": "Tanner"
+  },
+  "0014": {
+   "wins": 9,
+   "losses": 13,
+   "ties": 0,
+   "pf": 1311.1,
+   "pa": 2568.98,
+   "team": "Jared"
+  },
+  "0012": {
+   "wins": 9,
+   "losses": 13,
+   "ties": 0,
+   "pf": 1298.3,
+   "pa": 2489.56,
+   "team": "Bret"
+  },
+  "0015": {
+   "wins": 9,
+   "losses": 13,
+   "ties": 0,
+   "pf": 1251.18,
+   "pa": 2354.7,
+   "team": "Daniel Q"
+  },
+  "0019": {
+   "wins": 8,
+   "losses": 14,
+   "ties": 0,
+   "pf": 1318.02,
+   "pa": 2607.28,
+   "team": "Kody"
+  },
+  "0013": {
+   "wins": 8,
+   "losses": 14,
+   "ties": 0,
+   "pf": 1134.7,
+   "pa": 2436.96,
+   "team": "RJ"
+  }
+ }
+}

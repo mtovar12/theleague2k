@@ -748,6 +748,17 @@ for year_key, conferences in sleeper_seasons.items():
         for row in rows:
             if row.get("personId") == sb["champ_id"]:
                 row.update({"leagueChampion": True, "champion": True, "finish": "Champion"})
+            elif row.get("personId") == sb.get("runner_id") and row.get("conferenceChampion"):
+                row.update({"finish": "Runner-up"})
+    # The owner records hold their own copies of these rows: mark them the same way.
+    for person_id, person in people.items():
+        for season in person["seasons"]:
+            if season.get("year") != str(year_key) or season.get("platform") != "Sleeper":
+                continue
+            if person_id == sb["champ_id"]:
+                season.update({"leagueChampion": True, "champion": True, "finish": "Champion"})
+            elif person_id == sb.get("runner_id") and season.get("conferenceChampion"):
+                season.update({"finish": "Runner-up"})
 
 for person_id, person in people.items():
     person["seasons"].sort(key=lambda season: int(season["year"]), reverse=True)

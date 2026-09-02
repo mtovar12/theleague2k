@@ -169,7 +169,10 @@ for key, rec in sorted(raw.items(), key=lambda kv: kv[0].split("_")[1]):
             pk[2].append(round(abs(pa - pb), 2))
     for g in rec.get("winners_bracket") or []:
         if g.get("w") and g.get("l"):
-            playoffs.append(dict(conf=conf, season=yr, round=g.get("r"), place=g.get("p"), winner=owner_of.get(g["w"]), loser=owner_of.get(g["l"])))
+            week = playoff_start + int(g.get("r") or 1) - 1
+            pts = {m["roster_id"]: float(m.get("points") or 0) for m in (rec.get("matchups") or {}).get(str(week), [])}
+            playoffs.append(dict(conf=conf, season=yr, round=g.get("r"), place=g.get("p"), winner=owner_of.get(g["w"]), loser=owner_of.get(g["l"]),
+                                 week=week, wpts=round(pts.get(g["w"], 0), 2), lpts=round(pts.get(g["l"], 0), 2)))
             if g.get("p") == 1:
                 champions[key] = dict(winner=owner_of.get(g["w"]), loser=owner_of.get(g["l"]))
 processed = dict(latest_name=latest_name, current=current, pair=dict(pair), records={c: dict(v) for c, v in records.items()},

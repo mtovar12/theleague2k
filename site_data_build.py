@@ -218,6 +218,21 @@ rivalry_games = []
 rivalry_playoffs = []
 
 
+playoff_record = defaultdict(lambda: {"wins": 0, "losses": 0, "pf": 0.0, "pa": 0.0, "games": 0})  # keys: person_id and (person_id, year)
+
+
+def add_playoff_record(person_id, year, scored, allowed):
+    if not person_id:
+        return
+    for key in (person_id, (person_id, str(year))):
+        rec = playoff_record[key]
+        rec["games"] += 1
+        rec["wins"] += scored > allowed
+        rec["losses"] += scored < allowed
+        rec["pf"] += scored
+        rec["pa"] += allowed
+
+
 def add_h2h(person_a, person_b, score_a, score_b, *, playoff=False, meta=None):
     if not person_a or not person_b or person_a == person_b:
         return
@@ -225,6 +240,9 @@ def add_h2h(person_a, person_b, score_a, score_b, *, playoff=False, meta=None):
     a = h2h[(person_a, person_b)]
     b = h2h[(person_b, person_a)]
     if playoff:
+        if meta and meta.get("year"):
+            add_playoff_record(person_a, meta["year"], score_a, score_b)
+            add_playoff_record(person_b, meta["year"], score_b, score_a)
         if score_a > score_b:
             a["playoffWins"] += 1
             b["playoffLosses"] += 1
@@ -488,10 +506,10 @@ for game in sleeper_history.get("playoffs", []):
     add_h2h(
         user_to_person.get(winner),
         user_to_person.get(loser),
-        1,
-        0,
+        game.get("wpts") or 1,
+        game.get("lpts") or 0,
         playoff=True,
-        meta={"year": year, "week": None, "platform": "Sleeper", "round": "Conference final" if game.get("place") == 1 else f"Playoff round {game.get('round')}", "conference": game.get("conf", "")},
+        meta={"year": year, "week": game.get("week"), "platform": "Sleeper", "round": "Conference final" if game.get("place") == 1 else f"Playoff round {game.get('round')}", "conference": game.get("conf", "")},
     )
 
 
@@ -793,7 +811,20 @@ for person_id, person in people.items():
                 number(season.get("pf")),
             ),
         )
+    for season in person["seasons"]:
+        po = playoff_record.get((person_id, str(season["year"])))
+        if po:
+            season["playoffWins"], season["playoffLosses"] = po["wins"], po["losses"]
+            season["playoffPf"], season["playoffPa"] = (round(po["pf"], 1), round(po["pa"], 1)) if po["pf"] > 1 else (None, None)
+    po = playoff_record.get(person_id, {"wins": 0, "losses": 0, "pf": 0.0, "pa": 0.0, "games": 0})
+    po_pf = round(po["pf"], 1) if po["pf"] > 1 else None  # early Sleeper rows carried only win/loss
+    po_pa = round(po["pa"], 1) if po["pf"] > 1 else None
+    total_pa = round(sum(pa_values), 1) if pa_values else None
     person["summary"] = {
+        "regular": {"wins": wins, "losses": losses, "ties": ties, "pf": round(pf, 1), "pa": total_pa},
+        "playoffs": {"wins": po["wins"], "losses": po["losses"], "pf": po_pf, "pa": po_pa},
+        "overall": {"wins": wins + po["wins"], "losses": losses + po["losses"], "ties": ties,
+                    "pf": round(pf + (po_pf or 0), 1), "pa": (round(total_pa + (po_pa or 0), 1) if total_pa is not None else None)},
         "wins": wins,
         "losses": losses,
         "ties": ties,

@@ -1208,14 +1208,22 @@
     const current = owner.current || {};
     const summary = owner.summary;
     const years = [...new Set(owner.seasons.map((season) => season.year))];
+    const recordCard = (label, rec, className = "") => {
+      const games = (rec.wins || 0) + (rec.losses || 0) + (rec.ties || 0);
+      const pct = games ? (((rec.wins || 0) + 0.5 * (rec.ties || 0)) / games * 100).toFixed(1) + "%" : "—";
+      const pfpa = rec.pf != null ? `PF ${formatNumber(rec.pf, 1)}${rec.pa != null ? ` · PA ${formatNumber(rec.pa, 1)}` : ""}` : "";
+      return `<article class="career-record ${className}"><small>${label}</small><strong>${rec.wins || 0}–${rec.losses || 0}${rec.ties ? `–${rec.ties}` : ""}</strong><span class="record-sub">${games ? `${pct} · ${games} game${games === 1 ? "" : "s"}` : "No games"}${pfpa ? `<br>${pfpa}` : ""}</span></article>`;
+    };
     root.innerHTML = `<header class="profile-header">
       <div><p class="section-kicker profile-kicker">Owner career</p><div class="profile-identity">${ownerMention(owner.id, owner.name, { link: false, secondary: current.team || owner.handle || "—", className: "profile-owner-mention", avatarClass: "owner-avatar profile-avatar", primaryTag: "h1" })}<div class="profile-chips">${current.conference ? `<span class="confchip ${current.conference.toLowerCase()}">${esc(current.conference)}</span>` : ""}${owner.handle && owner.handle !== owner.name ? `<span class="handle-chip">@${esc(owner.handle)}</span>` : ""}</div></div></div>
       <a class="back-link" href="owners.html">All owners →</a>
     </header>
+    <div class="record-strip">
+      ${recordCard("Regular season", summary.regular || summary)}
+      ${recordCard("Playoffs", summary.playoffs || { wins: 0, losses: 0 })}
+      ${recordCard("Overall", summary.overall || summary, "career-record-overall")}
+    </div>
     <div class="summary-grid">
-      <article><small>Overall record</small><strong>${summary.wins}–${summary.losses}${summary.ties ? `–${summary.ties}` : ""}</strong></article>
-      <article><small>Win percentage</small><strong>${(summary.winPct * 100).toFixed(1)}%</strong></article>
-      <article><small>Total PF</small><strong>${formatNumber(summary.pf, 1)}</strong></article>
       <article class="gold-stat"><small>League titles</small><strong>${summary.titles}</strong></article>
       <article><small>Conference titles</small><strong>${summary.conferenceTitles}</strong></article>
       <article><small>Playoff appearances</small><strong>${summary.playoffAppearances}</strong></article>
@@ -1230,8 +1238,9 @@
     const eraButtons = Array.from(document.querySelectorAll("[data-era-filter]"));
     function drawCareer() {
       const rows = owner.seasons.filter((season) => (yearSelect.value === "ALL" || season.year === yearSelect.value) && (eraFilter === "ALL" || season.era === eraFilter));
-      $("career-table").innerHTML = table(["Year", "Platform", "Team", "Conf.", "Record", "PF", "PA", "Finish", "Season"], rows.map((season) => [
-        `<strong>${esc(season.year)}</strong>`, `<span class="platform-chip">${esc(season.platform)}</span>`, identityMarkup(season.team, personId, owner.handle, season.logo), esc(season.conference || "—"), esc(recordText(season)), season.pf == null ? "—" : formatNumber(season.pf, 1), season.pa == null ? "—" : formatNumber(season.pa, 1), `<span class="finish ${season.champion ? "champion" : ""}">${esc(season.finish || "—")}</span>`, `<a class="season-row-link" href="season.html?year=${encodeURIComponent(season.year)}">View season →</a>`
+      const playoffText = (season) => season.playoffWins == null && season.playoffLosses == null ? "—" : `${season.playoffWins || 0}–${season.playoffLosses || 0}${season.playoffPf != null ? `<small class="table-sub">${formatNumber(season.playoffPf, 1)} · ${formatNumber(season.playoffPa, 1)}</small>` : ""}`;
+      $("career-table").innerHTML = table(["Year", "Platform", "Team", "Conf.", "Reg. season", "Playoffs", "PF", "PA", "Finish", "Season"], rows.map((season) => [
+        `<strong>${esc(season.year)}</strong>`, `<span class="platform-chip">${esc(season.platform)}</span>`, identityMarkup(season.team, personId, owner.handle, season.logo), esc(season.conference || "—"), esc(recordText(season)), playoffText(season), season.pf == null ? "—" : formatNumber(season.pf, 1), season.pa == null ? "—" : formatNumber(season.pa, 1), `<span class="finish ${season.champion ? "champion" : ""}">${esc(season.finish || "—")}</span>`, `<a class="season-row-link" href="season.html?year=${encodeURIComponent(season.year)}">View season →</a>`
       ]));
       repairImages($("career-table"));
     }

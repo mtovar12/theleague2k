@@ -5610,3 +5610,14 @@ a.owner-mention:hover .owner-mention-primary {
 .player-trail-stop { display: inline-flex; align-items: center; gap: 8px; }
 .player-trail-stop .conf-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; padding: 2px 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); }
 .player-trail-stop .conf-afc { color: #ff7a7a; } .player-trail-stop .conf-nfc { color: #7ab4ff; }
+
+/* Owner record split */
+.record-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 26px 0 14px; }
+.record-strip .career-record { position: relative; overflow: hidden; padding: 18px 20px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; background: rgba(255, 255, 255, 0.02); }
+.record-strip .career-record small { display: block; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted, #9aa3b2); }
+.record-strip .career-record strong { display: block; margin-top: 8px; font-family: var(--display, inherit); font-size: 34px; line-height: 1; letter-spacing: 0.01em; }
+.record-strip .record-sub { display: block; margin-top: 10px; font-size: 12px; line-height: 1.5; color: var(--muted, #9aa3b2); letter-spacing: 0.02em; }
+.record-strip .career-record-overall { border-color: rgba(216, 178, 92, 0.45); }
+.record-strip .career-record-overall strong { color: var(--gold-bright, var(--gold, #d8b25c)); }
+@media (max-width: 720px) { .record-strip { grid-template-columns: 1fr; } }
+.table-sub { display: block; font-size: 11px; color: var(--muted, #9aa3b2); margin-top: 2px; }

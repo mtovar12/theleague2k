@@ -402,6 +402,28 @@ for year in sorted(mfl_raw):
                 playoff=True,
                 meta={"year": year, "week": game["week"], "platform": "MFL", "round": "Super Bowl", "conference": "League"},
             )
+        # Third-place games between the conference semifinal losers (brackets 5 and 6). The "Loser Bowl" (4) and its
+        # third-place game (7) are consolation brackets for non-playoff teams and are not playoff games.
+        for bracket_id in ("5", "6"):
+            games, _ = playoff_games(details.get(bracket_id, {}).get("playoffBracket", {}))
+            for game in games:
+                home_row, away_row = mfl_season_lookup.get((year, game["home"])), mfl_season_lookup.get((year, game["away"]))
+                if not (home_row and away_row and home_row.get("playoff") and away_row.get("playoff")):
+                    continue
+                home_won = game["homeScore"] > game["awayScore"]
+                winner_row, loser_row = (home_row, away_row) if home_won else (away_row, home_row)
+                if winner_row.get("finish") == "Semifinal":
+                    winner_row["finish"] = "Third place"
+                if loser_row.get("finish") == "Semifinal":
+                    loser_row["finish"] = "Fourth place"
+                add_h2h(
+                    mfl_to_person.get((year, game["home"])),
+                    mfl_to_person.get((year, game["away"])),
+                    game["homeScore"],
+                    game["awayScore"],
+                    playoff=True,
+                    meta={"year": year, "week": game["week"], "platform": "MFL", "round": "Third place game", "conference": mfl_conference(year, franchises[game["home"]])},
+                )
 
     last_regular = integer(league.get("lastRegularSeasonWeek"), 13)
     seen_scores = set()

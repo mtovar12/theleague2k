@@ -741,13 +741,28 @@
     function ownerTrailMarkup(player) {
       const best = player.best || {};
       const bestOwner = best.ownerId ? person(best.ownerId) : null;
-      const owners = (player.ownerIds || []).map((ownerId) => {
+      const stops = Array.isArray(player.stops) ? player.stops : [];
+      const byYear = new Map();
+      stops.forEach((stop) => {
+        if (!byYear.has(stop.year)) byYear.set(stop.year, []);
+        byYear.get(stop.year).push(stop);
+      });
+      const trail = Array.from(byYear.entries()).sort((a, b) => Number(b[0]) - Number(a[0])).map(([year, yearStops]) => {
+        const items = yearStops.sort((a, b) => a.conf.localeCompare(b.conf) || b.weeks - a.weeks).map((stop) => {
+          const owner = person(stop.ownerId);
+          if (!owner) return "";
+          const conf = stop.conf && stop.conf !== "Interconference" ? stop.conf : "";
+          return `<div class="player-trail-stop">${conf ? `<span class="conf-tag conf-${conf.toLowerCase()}">${esc(conf)}</span>` : ""}${ownerMention(owner.id, owner.name, { secondary: `${stop.weeks} wk${stop.weeks === 1 ? "" : "s"} · ${formatNumber(stop.pts, 1)} pts`, className: "player-trail-owner", avatarClass: "team-avatar" })}</div>`;
+        }).filter(Boolean).join("");
+        return `<div class="player-trail-season"><span class="player-trail-year">${esc(year)}</span><div class="player-trail-stops">${items}</div></div>`;
+      }).join("");
+      const fallback = (player.ownerIds || []).map((ownerId) => {
         const owner = person(ownerId);
-        if (!owner) return "";
-        return ownerMention(owner.id, owner.name, { secondary: owner.current?.team || owner.handle || "—", className: "player-trail-owner", avatarClass: "team-avatar" });
+        return owner ? ownerMention(owner.id, owner.name, { secondary: owner.current?.team || owner.handle || "—", className: "player-trail-owner", avatarClass: "team-avatar" }) : "";
       }).filter(Boolean).join("");
+      const owners = trail || fallback;
       return `<div class="player-detail-grid">
-        <section><span class="player-detail-label">Who owned him</span><div class="player-owner-trail">${owners || '<span class="player-detail-empty">No ownership stops recorded</span>'}</div></section>
+        <section class="player-trail-section"><span class="player-detail-label">Who owned him · ${player.owners || (player.ownerIds || []).length} owner${(player.owners || 0) === 1 ? "" : "s"}, both conferences</span><div class="player-owner-trail">${owners || '<span class="player-detail-empty">No ownership stops recorded</span>'}</div></section>
         <section class="player-best-week"><span class="player-detail-label">Best week</span><strong>${best.pts == null ? "—" : `${seasonScore(best.pts)} pts`}</strong><small>${best.year ? `${esc(best.year)} · Week ${esc(best.week)}` : "No starter week"}</small>${bestOwner ? ownerMention(bestOwner.id, bestOwner.name, { secondary: bestOwner.current?.team || bestOwner.handle || "—", className: "player-best-owner", avatarClass: "team-avatar" }) : ""}</section>
         <section class="player-career-span"><span class="player-detail-label">Seasons</span><strong>${esc(seasonsSpan(player))}</strong><small>${(player.seasons || []).length} season${(player.seasons || []).length === 1 ? "" : "s"} represented</small></section>
         <section class="player-transaction-breakdown"><span class="player-detail-label">Transaction breakdown</span><div><span><b>${player.tx?.adds || 0}</b>Adds</span><span><b>${player.tx?.drops || 0}</b>Drops</span><span><b>${player.tx?.waivers || 0}</b>Waivers</span><span><b>${player.tx?.trades || 0}</b>Trades</span></div></section>
@@ -795,7 +810,9 @@
       const meta = boardMeta[board];
       const keys = boardKeys();
       glossary.textContent = meta.glossary;
-      rankingsRoot.innerHTML = keys.length ? keys.map((key, index) => {
+      const BOARD_LIMIT = 10;
+      const visibleKeys = boardExpanded ? keys : keys.slice(0, BOARD_LIMIT);
+      rankingsRoot.innerHTML = visibleKeys.length ? visibleKeys.map((key, index) => {
         const player = playerData.players[key];
         const detailId = `player-detail-${index}`;
         const support = meta.support(player);
@@ -809,13 +826,22 @@
           </button>
           <div class="player-ranking-detail" id="${detailId}" hidden>${ownerTrailMarkup(player)}</div>
         </article>`;
-      }).join("") : '<p class="history-empty">No players match this view.</p>';
+      }).join("") + (keys.length > BOARD_LIMIT ? `<div class="show-more-row"><button type="button" class="show-more" data-board-expand>${boardExpanded ? "Show top 10 only" : `Show all ${keys.length}`}</button></div>` : "") : '<p class="history-empty">No players match this view.</p>';
       rankingsRoot.setAttribute("aria-busy", "false");
       repairImages(rankingsRoot);
     }
 
+    let boardExpanded = false;
+    rankingsRoot.addEventListener("click", (event) => {
+      const expand = event.target.closest("[data-board-expand]");
+      if (!expand) return;
+      boardExpanded = !boardExpanded;
+      drawBoard();
+      if (!boardExpanded) rankingsRoot.scrollIntoView({ block: "start" });
+    });
     function selectBoard(nextBoard) {
       board = nextBoard;
+      boardExpanded = false;
       boardButtons.forEach((button) => {
         const active = button.dataset.playerBoard === board;
         button.classList.toggle("is-active", active);
@@ -1014,8 +1040,11 @@
         return (valueFor(a, sortKey) - valueFor(b, sortKey)) * direction || a.name.localeCompare(b.name);
       });
       $("scorers-count").textContent = `${rows.length} player${rows.length === 1 ? "" : "s"}`;
+      const SCORER_LIMIT = 10;
+      const shown = scorersExpanded ? rows : rows.slice(0, SCORER_LIMIT);
+      const moreMarkup = rows.length > SCORER_LIMIT ? `<div class="show-more-row"><button type="button" class="show-more" data-scorers-expand>${scorersExpanded ? "Show top 10 only" : `Show all ${rows.length} players`}</button></div>` : "";
       const heading = (label, key) => `<th aria-sort="${sortKey === key ? (sortDirection === "asc" ? "ascending" : "descending") : "none"}"><button type="button" data-history-sort="${key}">${label}<span aria-hidden="true">${sortKey === key ? (sortDirection === "asc" ? "↑" : "↓") : "↕"}</span></button></th>`;
-      scorersRoot.innerHTML = rows.length ? `<div class="table-wrap"><table><thead><tr><th>Player</th>${heading("Points", "pts")}${heading("Starts", "starts")}${heading("Pts / start", "pps")}${heading("Weeks", "weeks")}</tr></thead><tbody>${rows.map((player) => `<tr><td><span class="scorer-player">${playerPhotoMarkup(player)}<span><strong>${esc(player.name)}</strong><small>${esc(player.pos)}</small></span></span></td><td><strong>${formatNumber(player.pts, 1)}</strong></td><td>${player.starts}</td><td>${player.starts ? formatNumber(player.pts / player.starts, 1) : "—"}</td><td>${player.weeks}</td></tr>`).join("")}</tbody></table></div>` : '<p class="history-empty">No players match this view.</p>';
+      scorersRoot.innerHTML = rows.length ? `<div class="table-wrap"><table><thead><tr><th>Player</th>${heading("Points", "pts")}${heading("Starts", "starts")}${heading("Pts / start", "pps")}${heading("Weeks", "weeks")}</tr></thead><tbody>${shown.map((player) => `<tr><td><span class="scorer-player">${playerPhotoMarkup(player)}<span><strong>${esc(player.name)}</strong><small>${esc(player.pos)}</small></span></span></td><td><strong>${formatNumber(player.pts, 1)}</strong></td><td>${player.starts}</td><td>${player.starts ? formatNumber(player.pts / player.starts, 1) : "—"}</td><td>${player.weeks}</td></tr>`).join("")}</tbody></table></div>${moreMarkup}` : '<p class="history-empty">No players match this view.</p>';
       repairImages(scorersRoot);
     }
 
@@ -1083,7 +1112,15 @@
       });
       drawScorers(viewPlayers());
     });
+    let scorersExpanded = false;
     scorersRoot.addEventListener("click", (event) => {
+      const expand = event.target.closest("[data-scorers-expand]");
+      if (expand) {
+        scorersExpanded = !scorersExpanded;
+        drawScorers(viewPlayers());
+        if (!scorersExpanded) scorersRoot.scrollIntoView({ block: "start" });
+        return;
+      }
       const button = event.target.closest("[data-history-sort]");
       if (!button) return;
       const nextKey = button.dataset.historySort;

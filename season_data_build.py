@@ -57,7 +57,7 @@ for year in ["2017", "2018", "2019", "2020", "2021"]:
         return "AFC" if div in ("00", "01") else "NFC"
     def team_of(fid):
         f = franchises[fid]
-        return dict(franchise=fid, team=f["name"].strip(), personId=mfl_to_person.get((year, fid)),
+        return dict(franchise=fid, team=f["name"].strip(), personId=mfl_to_person.get((year, fid)), conference=conf_of(fid),
                     logo=f"assets/logos/mfl/{year}_{fid}{os.path.splitext(f.get('logo') or '.jpg')[1] or '.jpg'}")
     def lineup(entry):
         out = []
@@ -157,7 +157,7 @@ for year in SLEEPER_YEARS:
             u = users.get(r.get("owner_id"), {})
             md = u.get("metadata") or {}
             handle = u.get("display_name", "")
-            return dict(roster=rid, team=(md.get("team_name") or handle or "—").strip(), personId=sleeper_handle_to_person.get(handle.lower()),
+            return dict(roster=rid, team=(md.get("team_name") or handle or "—").strip(), personId=sleeper_handle_to_person.get(handle.lower()), conference=conf,
                         logo=md.get("avatar") or (f"https://sleepercdn.com/avatars/thumbs/{u['avatar']}" if u.get("avatar") else ""))
         for wk, ms in rec["matchups"].items():
             by = {}

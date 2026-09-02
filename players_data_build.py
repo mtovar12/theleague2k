@@ -53,7 +53,7 @@ def rec_for(pl):
     if k not in players:
         players[k] = dict(key=k, name=pl.get("name"), pos=pl.get("pos", ""), sid=pl.get("sid", ""), ownerIds=set(), weeks=0, starts=0, pts=0.0,
                           winShare=0.0, winsContributed=0, playoffWeeks=0, best=dict(pts=0.0, year=None, week=None, ownerId=None), seasons=set(),
-                          tx=dict(adds=0, drops=0, waivers=0, trades=0, total=0))
+                          tx=dict(adds=0, drops=0, waivers=0, trades=0, total=0), stops={})
     return players[k]
 
 def ingest_team(team, year, week, won):
@@ -64,6 +64,10 @@ def ingest_team(team, year, week, won):
         pts = float(pl.get("pts") or 0)
         if team.get("personId"):
             r["ownerIds"].add(team["personId"])
+            stop = r["stops"].setdefault((str(year), team.get("conference") or "", team["personId"]), dict(year=str(year), conf=team.get("conference") or "", ownerId=team["personId"], weeks=0, starts=0, pts=0.0))
+            stop["weeks"] += 1
+            if pl.get("starter"):
+                stop["starts"] += 1; stop["pts"] += pts
         r["weeks"] += 1
         r["seasons"].add(str(year))
         if week >= PLAYOFF_START:
@@ -110,7 +114,7 @@ def bump(k, name, pos, field, sid=""):
     if not r:
         r = players[k] = dict(key=k, name=name, pos=pos, sid=sid if sid else (k if k in P_ALL else ""), ownerIds=set(), weeks=0, starts=0, pts=0.0,
                               winShare=0.0, winsContributed=0, playoffWeeks=0, best=dict(pts=0.0, year=None, week=None, ownerId=None), seasons=set(),
-                              tx=dict(adds=0, drops=0, waivers=0, trades=0, total=0))
+                              tx=dict(adds=0, drops=0, waivers=0, trades=0, total=0), stops={})
     r["tx"][field] += 1
     r["tx"]["total"] += 1
 for y in ["2017", "2018", "2019", "2020", "2021"]:
@@ -155,6 +159,7 @@ rows = []
 for k, r in players.items():
     r = dict(r)
     r["owners"] = len(r["ownerIds"]); r["ownerIds"] = sorted(r["ownerIds"])
+    r["stops"] = sorted(({**st, "pts": round(st["pts"], 1)} for st in r["stops"].values()), key=lambda st: (-int(st["year"]), st["conf"], -st["weeks"]))
     r["seasons"] = sorted(r["seasons"])
     r["pts"] = round(r["pts"], 2); r["winShare"] = round(r["winShare"], 3)
     r["photo"] = photo_url(r.get("sid", ""), r.get("pos", ""))

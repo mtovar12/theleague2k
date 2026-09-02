@@ -136,6 +136,7 @@ for year in ["2017", "2018", "2019", "2020", "2021"]:
 
 # ---------------- Sleeper ----------------
 H = json.load(open(HIST / "history_raw.json"))
+OVERRIDES = {k: v for k, v in (json.load(open(HIST / "roster_owner_overrides.json")) if (HIST / "roster_owner_overrides.json").exists() else {}).items() if not k.startswith("_")}
 SCRATCH_PLAYERS = str((Path(__file__).resolve().parent / "data" / "history" / "sleeper_players.json"))
 P = json.load(open(SCRATCH_PLAYERS)) if os.path.exists(SCRATCH_PLAYERS) else {}
 def pinfo(pid):
@@ -152,9 +153,10 @@ for year in SLEEPER_YEARS:
             continue
         users = {u["user_id"]: u for u in rec["users"]}
         rosters = {r["roster_id"]: r for r in rec["rosters"]}
+        overrides = OVERRIDES.get(f"{conf}_{year}", {})
         def team_of(rid):
             r = rosters.get(rid, {})
-            u = users.get(r.get("owner_id"), {})
+            u = users.get(overrides.get(str(rid)) or r.get("owner_id"), {})
             md = u.get("metadata") or {}
             handle = u.get("display_name", "")
             return dict(roster=rid, team=(md.get("team_name") or handle or "—").strip(), personId=sleeper_handle_to_person.get(handle.lower()), conference=conf,
@@ -194,8 +196,9 @@ for year in SLEEPER_YEARS:
             continue
         users = {u["user_id"]: u for u in rec["users"]}
         cols = {}
+        overrides = OVERRIDES.get(f"{conf}_{year}", {})
         for p in sorted(json.load(open(pf)), key=lambda x: x.get("pick_no") or 0):
-            uid = str(p.get("picked_by") or "")
+            uid = str(overrides.get(str(p.get("roster_id"))) or p.get("picked_by") or "")
             u = users.get(uid, {})
             md = p.get("metadata") or {}
             name = f"{md.get('first_name','')} {md.get('last_name','')}".strip()

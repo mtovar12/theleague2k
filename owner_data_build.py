@@ -28,6 +28,7 @@ def photo_url(sid, pos):
     return f"https://sleepercdn.com/content/nfl/players/thumb/{sid}.jpg"
 
 identities = json.load(open(HIST / "identities.json"))["people"]
+OVERRIDES = {k: v for k, v in (json.load(open(HIST / "roster_owner_overrides.json")) if (HIST / "roster_owner_overrides.json").exists() else {}).items() if not k.startswith("_")}
 handle_to_person = {(rec.get("sleeper") or "").lower(): pid for pid, rec in identities.items() if rec.get("sleeper")}
 mfl_to_person = {(str(y), fid): pid for pid, rec in identities.items() for y, fid in (rec.get("mfl") or {}).items()}
 
@@ -114,9 +115,10 @@ for f in sorted(glob.glob(str(SEASONS / "*.json"))):
 for f in sorted(glob.glob(str(HIST / "sleeper_drafts" / "*_picks.json"))):
     year, conf = Path(f).name.split("_")[0], Path(f).name.split("_")[1]
     picks = json.load(open(f))
+    overrides = OVERRIDES.get(f"{conf}_{year}", {})
     by_owner = defaultdict(list)
     for p in picks:
-        pid = user_to_person.get(str(p.get("picked_by")))
+        pid = user_to_person.get(str(overrides.get(str(p.get("roster_id"))) or p.get("picked_by")))
         if not pid:
             continue
         md = p.get("metadata") or {}

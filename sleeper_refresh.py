@@ -48,6 +48,11 @@ print(f"NFL state: season {season}, week {current_week}, {state.get('season_type
 
 raw = jload(HIST / "history_raw.json", {})
 identities = jload(HIST / "sleeper_identities.json", {})
+OVERRIDES = {k: v for k, v in jload(HIST / "roster_owner_overrides.json", {}).items() if not k.startswith("_")}
+def owner_map(key, rec):
+    """roster_id -> managing user_id, honoring commissioner-login overrides."""
+    ov = OVERRIDES.get(key, {})
+    return {r["roster_id"]: str(ov.get(str(r["roster_id"])) or r.get("owner_id")) for r in rec.get("rosters", [])}
 
 for conf, lid in LEAGUES.items():
     league = get(f"/league/{lid}")
@@ -85,16 +90,34 @@ for conf, lid in LEAGUES.items():
         picks = get(f"/draft/{league['draft_id']}/picks", []) or []
         if picks:
             jdump(HIST / "sleeper_drafts" / f"{yr}_{conf}_picks.json", picks)
-    # Identities for this season
-    for u in users:
-        md = u.get("metadata") or {}
-        identities.setdefault(str(u["user_id"]), {})[yr] = dict(
-            conf=conf, team=(md.get("team_name") or u.get("display_name") or "").strip(),
-            avatar=md.get("avatar") or (f"https://sleepercdn.com/avatars/thumbs/{u['avatar']}" if u.get("avatar") else ""),
-            handle=u.get("display_name", ""))
     print(f"{conf} {yr}: {len(users)} users, {len(matchups)} scored weeks, {len(tx)} transactions, bracket games {len(rec['winners_bracket'])}")
 
 jdump(HIST / "history_raw.json", raw)
+
+# Identities for every stored season: a user who is in both leagues (the commissioner) is credited to the league where
+# they actually hold a roster; a manager who ran a roster registered under the commissioner login (override) gets that roster.
+for key, rec in raw.items():
+    conf, yr = key.split("_")
+    omap = owner_map(key, rec)
+    holders = set(omap.values())
+    users = {str(u["user_id"]): u for u in rec.get("users", [])}
+    for uid, u in users.items():
+        md = u.get("metadata") or {}
+        has_roster = uid in holders
+        existing = identities.get(uid, {}).get(yr)
+        if existing and existing.get("_roster") and not has_roster:
+            continue  # keep the league where they manage a team
+        identities.setdefault(uid, {})[yr] = dict(
+            conf=conf, team=(md.get("team_name") or u.get("display_name") or "").strip(),
+            avatar=md.get("avatar") or (f"https://sleepercdn.com/avatars/thumbs/{u['avatar']}" if u.get("avatar") else ""),
+            handle=u.get("display_name", ""), _roster=has_roster)
+    for rid, uid in omap.items():
+        if uid not in users and uid in identities:  # override manager not a member of this league's user list: still credit the season
+            base = next(iter(identities[uid].values()))
+            identities[uid][yr] = dict(conf=conf, team=base.get("handle", ""), avatar=base.get("avatar", ""), handle=base.get("handle", ""), _roster=True)
+for uid in identities:
+    for yr in identities[uid]:
+        identities[uid][yr].pop("_roster", None)
 jdump(HIST / "sleeper_identities.json", identities)
 
 # Player DB (14MB) refreshed weekly
@@ -113,7 +136,7 @@ years = sorted({k.split("_")[1] for k in raw})
 for key, rec in sorted(raw.items(), key=lambda kv: kv[0].split("_")[1]):
     conf, yr = key.split("_")
     playoff_start = int(rec.get("playoff_week_start") or ((rec.get("settings") or {}).get("playoff_week_start")) or 14)
-    owner_of = {r["roster_id"]: str(r.get("owner_id")) for r in rec.get("rosters", [])}
+    owner_of = owner_map(key, rec)
     for u in rec.get("users", []):
         latest_name[str(u["user_id"])] = u.get("display_name", "")
     if yr == years[-1]:
@@ -166,7 +189,7 @@ if f"AFC_{yr}" in champions and f"NFC_{yr}" in champions and yr not in ch["super
     pts = {}
     for conf in ("AFC", "NFC"):
         rec = raw[f"{conf}_{yr}"]
-        owner_of = {r["roster_id"]: str(r.get("owner_id")) for r in rec.get("rosters", [])}
+        owner_of = owner_map(f"{conf}_{yr}", rec)
         champ_uid = champions[f"{conf}_{yr}"]["winner"]
         for m in (rec.get("matchups") or {}).get(str(sb_week), []):
             if owner_of.get(m["roster_id"]) == champ_uid and float(m.get("points") or 0) > 0:

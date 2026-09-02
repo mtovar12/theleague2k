@@ -1,0 +1,4 @@
+{
+ "_comment": "Rosters whose Sleeper owner_id is the commissioner's login but were managed by someone else. key = <CONF>_<year>, roster_id -> real manager's Sleeper user_id.",
+ "NFC_2022": {"8": "471557153769910272"}
+}

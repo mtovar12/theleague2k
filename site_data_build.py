@@ -853,7 +853,8 @@ for person_id, person in people.items():
     if not person["name"]:
         person["name"] = (current or {}).get("team") or person["handle"] or "—"
 
-    completed = [season for season in person["seasons"] if season.get("wins") is not None and season.get("losses") is not None and not season.get("partial")]
+    # Mark's ruling (2026-09-02): verified partial seasons (2016 = through Week 10) COUNT toward career totals; they stay labeled.
+    completed = [season for season in person["seasons"] if season.get("wins") is not None and season.get("losses") is not None]
     wins = sum(integer(season["wins"]) for season in completed)
     losses = sum(integer(season["losses"]) for season in completed)
     ties = sum(integer(season.get("ties")) for season in completed)

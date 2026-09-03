@@ -160,6 +160,10 @@
   }
 
   function recordText(row) {
+    const base = recordTextBase(row);
+    return row && row.partial && base !== "—" ? `${base} · thru Wk 10` : base;
+  }
+  function recordTextBase(row) {
     if (row.wins == null || row.losses == null) return "—";
     const ties = row.ties ? `–${row.ties}` : "";
     return `${row.wins}–${row.losses}${ties}`;

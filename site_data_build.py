@@ -697,6 +697,7 @@ for person_id, raw in identities.items():
     for year, team in raw.get("pre", {}).items():
         year = str(year)
         record = early_records.get((year, person_id), (None, None))
+        partial = year == "2016" and record[0] is not None  # 2016 standings come from the Week 11 recap (through Week 10)
         finish, champion, conference_champion, playoff = early_finish.get((year, person_id), ("—", False, False, False))
         season = {
             "year": year,
@@ -714,7 +715,7 @@ for person_id, raw in identities.items():
             "finish": finish,
             "champion": champion,
             "leagueChampion": champion and finish == "Champion",
-            "conferenceChampion": conference_champion,
+            "conferenceChampion": conference_champion, "partial": partial, "note": ("Through Week 10" if partial else ""),
         }
         add_person_season(person_id, season)
         early_seasons.setdefault(year, []).append({**season, "personId": person_id})
@@ -852,7 +853,7 @@ for person_id, person in people.items():
     if not person["name"]:
         person["name"] = (current or {}).get("team") or person["handle"] or "—"
 
-    completed = [season for season in person["seasons"] if season.get("wins") is not None and season.get("losses") is not None]
+    completed = [season for season in person["seasons"] if season.get("wins") is not None and season.get("losses") is not None and not season.get("partial")]
     wins = sum(integer(season["wins"]) for season in completed)
     losses = sum(integer(season["losses"]) for season in completed)
     ties = sum(integer(season.get("ties")) for season in completed)

@@ -56,6 +56,6 @@ for u, t in teams.items():
 rows.sort(key=lambda r: (-r[3], -r[4]["ppg"]))
 rows = [[i + 1, *r] for i, r in enumerate(rows)]
 OUT.write_text(json.dumps(dict(edition=f"Week {last_week} Edition · {time.strftime('%b %d, %Y')}",
-    note="Computed from results through week %d: win percentage, points per game, last-three-week scoring form, and all-play record. Updates automatically after every scored week." % last_week,
+    note="Computed from results through week %d: win percentage, points per game, last-three-week scoring form, and all-play record. Updated after every scored week." % last_week,
     week=last_week, rows=rows), ensure_ascii=False), encoding="utf-8")
 print(f"power rankings week {last_week}: #1 {rows[0][2]} ({rows[0][1]}) {rows[0][4]}")

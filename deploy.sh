@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Refresh Sleeper data, rebuild all site data and pages, commit, and push.
-# GitHub Actions (.github/workflows/update.yml) runs the same steps on a schedule, so this is only for manual pushes.
+# This is currently the only refresh path; the scheduled GitHub Actions workflow (pending/update.yml) is not installed yet.
 # Usage: ./deploy.sh "message"
 set -euo pipefail
 cd "$(dirname "$0")"
